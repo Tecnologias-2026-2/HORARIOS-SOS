@@ -2,7 +2,9 @@ Para Completar por grupo
 
 🌐 Nombre del Proyecto: Horarios SoS
 
+
 Escribe aquí una descripción corta del proyecto.
+
 
 👥 Integrantes:
 
@@ -11,6 +13,7 @@ Orlando Antonio Cely Mojica - 1202838
 Alejandro Salazar Ortiz - 1202836
 
 Danna Mychelle Bravo Aguilar - 1202820
+
 
 🎯 1. Objetivo General
 
