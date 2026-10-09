@@ -53,10 +53,7 @@ Explicar qué proceso representa.
 
 🎨 5. URL del Prototipo
 
-Colocar aquí el enlace público de Figma:
-
-https://figma.com/xxxxx
-
+https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-280&p=f&t=Sawy6N8iSk2v5Boy-0
 
 🗄️ 6. Diseño de Base de Datos
 
