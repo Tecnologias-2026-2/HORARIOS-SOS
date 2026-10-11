@@ -1,4 +1,4 @@
-<img width="853" height="1280" alt="image" src="https://github.com/user-attachments/assets/01d4d277-de18-4dde-bac5-7975bd415092" />Para Completar por grupo
+Completar por grupo
 
 🌐 Nombre del Proyecto: Horarios SoS
 
