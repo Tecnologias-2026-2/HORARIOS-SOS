@@ -1,0 +1,536 @@
+@charset "utf-8";
+
+/* ==========================================
+   ESTILOS EXCLUSIVOS - MIS HORARIOS (SOS)
+   ========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: #07070f;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+}
+
+/* BARRA DE NAVEGACIÓN SUPERIOR */
+.navbar {
+    height: 60px;
+    background-color: #12121c;
+    border-bottom: 1px solid #1f1f2e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+.logo-sos-cyan {
+    color: #00ffff;
+}
+
+.logo-text {
+    color: #ffffff;
+}
+
+.nav-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    background-color: #181826;
+    border: 1px solid #28283d;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ffff;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.icon-btn:hover {
+    background-color: #222238;
+    border-color: #00ffff;
+}
+
+.breadcrumb {
+    font-size: 12px;
+    color: #888899;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.breadcrumb a {
+    color: #888899;
+    text-decoration: none;
+}
+
+.breadcrumb .separator {
+    color: #555566;
+}
+
+.breadcrumb strong {
+    color: #cccccc;
+}
+
+.cerrar-sesion-btn {
+    background-color: #181826;
+    border: 1px solid #28283d;
+    color: #888899;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.cerrar-sesion-btn:hover {
+    background-color: #222238;
+    color: #ffffff;
+    border-color: #44445c;
+}
+
+/* LAYOUT PRINCIPAL */
+.main-layout {
+    display: flex;
+    height: calc(100vh - 60px);
+    width: 100vw;
+}
+
+/* PANEL LATERAL IZQUIERDO */
+.sidebar-panel {
+    width: 320px;
+    background-color: #0f0f18;
+    border-right: 1px solid #1a1a29;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.panel-box {
+    background-color: #13131f;
+    border: 1px solid #1e1e30;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.panel-box h2 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.field-label {
+    display: block;
+    font-size: 10px;
+    color: #77778e;
+    font-weight: bold;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.input-container {
+    margin-bottom: 8px;
+}
+
+.input-field {
+    width: 100%;
+    background-color: #0a0a12;
+    border: 1px solid #22223b;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #ffffff;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    border-color: #00ffff;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-guardar {
+    flex: 2;
+    background-color: #3b7a1e;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 9px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-guardar:hover {
+    background-color: #469224;
+}
+
+.btn-limpiar {
+    flex: 1;
+    background-color: #7a1e1e;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 9px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-limpiar:hover {
+    background-color: #992525;
+}
+
+.btn-nuevo {
+    flex: 1;
+    background-color: #18182a;
+    border: 1px solid #00ffff;
+    color: #00ffff;
+    padding: 7px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-eliminar-horario {
+    background-color: #261818;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.classes-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.clases-badge {
+    background-color: #202038;
+    color: #70ff00;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid #333352;
+}
+
+.btn-agregar-clases {
+    display: block;
+    width: 100%;
+    background-color: #19192b;
+    border: 1px solid #2d2d4a;
+    color: #70ff00;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-agregar-clases:hover {
+    background-color: #212138;
+    border-color: #70ff00;
+}
+
+/* LISTA DE MATERIAS DE LA BARRA LATERAL */
+.sidebar-classes-list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.empty-classes-text {
+    font-size: 11px;
+    color: #66667a;
+    line-height: 1.4;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.sidebar-class-card {
+    background-color: #0d0d17;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-class-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-class-info strong {
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.sidebar-class-info span {
+    font-size: 10px;
+    color: #a0a0b5;
+}
+
+.sidebar-class-info small {
+    font-size: 10px;
+    color: #66667a;
+}
+
+/* CALENDARIO (COLUMNA DERECHA) */
+.calendar-section {
+    flex: 1;
+    background-color: #080811;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.calendar-grid-container {
+    background-color: #0b0b14;
+    border: 1px solid #171726;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.cal-header-row {
+    display: grid;
+    grid-template-columns: 60px repeat(6, 1fr);
+    background-color: #10101c;
+    border-bottom: 1px solid #1c1c2e;
+    text-align: center;
+}
+
+.time-col-header {
+    padding: 12px 0;
+}
+
+.day-header {
+    padding: 12px 0;
+    font-size: 11px;
+    font-weight: bold;
+    color: #8888a0;
+    letter-spacing: 0.5px;
+    border-left: 1px solid #1c1c2e;
+}
+
+.cal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.cal-row {
+    display: grid;
+    grid-template-columns: 60px repeat(6, 1fr);
+    min-height: 48px;
+    border-bottom: 1px solid #141421;
+}
+
+.time-label {
+    font-size: 10px;
+    color: #66667a;
+    text-align: right;
+    padding-right: 10px;
+    padding-top: 6px;
+}
+
+.cal-cell {
+    border-left: 1px solid #141421;
+    position: relative;
+    padding: 2px;
+}
+
+.clase-item-bloque {
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: #07070f;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.clase-item-bloque strong {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.clase-item-bloque span, .clase-item-bloque small {
+    font-size: 9px;
+    opacity: 0.85;
+}
+/* ==========================================
+   MODAL DE ADVERTENCIA PARA CERRAR SESIÓN
+   ========================================== */
+
+.logout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(7, 7, 15, 0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-in-out;
+    z-index: 99999;
+}
+
+.logout-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.logout-modal-box {
+    background-color: #12121e;
+    border: 1px solid #232338;
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(-8px);
+    transition: transform 0.25s ease-in-out;
+}
+
+.logout-modal-overlay.active .logout-modal-box {
+    transform: translateY(0);
+}
+
+/* CONTENEDOR DEL ICONO SUPERIOR */
+.logout-icon-container {
+    width: 64px;
+    height: 64px;
+    background-color: #241424;
+    border: 1px solid #481d33;
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logout-modal-box h3 {
+    margin: 0 0 10px 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.logout-modal-box p {
+    margin: 0 0 24px 0;
+    color: #88889e;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.logout-modal-box p .highlight-cyan {
+    color: #00ffff;
+    font-weight: 600;
+}
+
+/* BOTONES DE ACCIÓN DEL MODAL */
+.logout-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.btn-confirm-logout {
+    width: 100%;
+    background-color: #2b1822;
+    border: 1px solid #ff4d6d;
+    color: #ff6685;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-confirm-logout:hover {
+    background-color: #381a2b;
+    border-color: #ff6685;
+}
+
+.btn-cancel-logout {
+    width: 100%;
+    background-color: #132418;
+    border: 1px solid #70ff00;
+    color: #70ff00;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-cancel-logout:hover {
+    background-color: #1a3322;
+}
