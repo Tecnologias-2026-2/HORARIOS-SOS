@@ -1,10 +1,10 @@
-Para Completar por grupo
+<img width="853" height="1280" alt="image" src="https://github.com/user-attachments/assets/01d4d277-de18-4dde-bac5-7975bd415092" />Para Completar por grupo
 
 🌐 Nombre del Proyecto: Horarios SoS
 
 
 Escribe aquí una descripción corta del proyecto.
-
+Se propone el desarrollo de una aplicación que facilite la creación y organización de horarios para los estudiantes, previa a la carga académica en la plataforma Univex.
 
 👥 Integrantes:
 
@@ -16,57 +16,49 @@ Danna Mychelle Bravo Aguilar - 1202820
 
 
 🎯 1. Objetivo General
-
-Escribir un solo párrafo donde expliquen:
-Qué quieren lograr con el sistema.
-Qué problema buscan solucionar.
+Esta iniciativa surge a partir de la pregunta sobre por qué se desarrolla esta propuesta y cuáles son los beneficios que ofrece. La razón principal es que la planificación previa a la carga académica es una práctica común entre los estudiantes, quienes buscan organizar y evaluar diferentes opciones de horarios y combinaciones de grupos para identificar las alternativas que mejor se ajusten a sus necesidades. Sin embargo, este proceso suele volverse confuso, ya que es fácil cometer errores al comparar horas, mezclar grupos o perder el orden de las opciones disponibles. Ante esta situación, la aplicación permitiría mantener una organización clara y estructurada de los horarios, facilitaría la visualización de las combinaciones posibles y contribuyendo a reducir errores, confusiones y el estrés durante el proceso de carga académica.
 
 🌍 2. Contexto de Uso
-
-¿Quién va a usar el sistema?
-¿Cómo se va a utilizar el sistema?
+Esta aplicación está dirigida a estudiantes universitarios de la Universidad Militar Nueva Granada. Su objetivo es facilitar la planificación de horarios con anticipación, ayudando a simplificar el proceso frustrante que puede ser la organización manual de los horarios.
 
 📋 3. Requerimientos del Sistema
 3.1 Requerimientos Funcionales
-
-Escriban lo que el sistema debe hacer.
-
-Ejemplo:
-RF01: El sistema debe permitir registrar usuarios.
-
-3.2 Requerimientos No Funcionales
+-> El usuario puede registrarse en la aplicación mediante una cuenta vinculada a su correo electrónico. 
+-> Dar la posibilidad de guardar múltiples combinaciones de horarios, junto con una lista organizada de los grupos y clases incluidas.
+-> Implementar la opción de ingresar bloques de horario para cada grupo y clase de manera personalizada.
+-> Permitir al usuario trabajar con un horario en blanco donde pueda combinar las opciones ingresadas previamente.  
 
 Escriban cómo debe comportarse el sistema.
-
-Ejemplo:
-RNF01: La página debe ser responsive.
+-> Alertar al usuario cuando se pasa de créditos en un horario o está por debajo de la cantidad por semestre.
+-> No permitir que dos diferentes materias o grupos de se crucen. 
+-> Tener un apartado donde se encuentre los enlaces de las distintas páginas web donde se puede consultar información sobre la carga académica, además de los horarios publicados para el semestre por la universidad para las diferentes carreras.
 
 🧠 4. Diagramas UML
 
 Diagrama de Casos de Uso
-
-Explicar brevemente qué muestra el diagrama.
+La aplicación permite a los estudiantes gestionar su proceso académico mediante un sistema de registro e inicio de sesión que interactúa con el correo institucional, facilitando la creación de horarios personalizados a partir de la selección de materias, grupos y bloques de tiempo. Durante la planificación, el sistema incorpora herramientas de validación para detectar cruces de horarios y evaluar la viabilidad de los desplazamientos entre las sedes de Bogotá o Cajicá, además de verificar la validez de los créditos seleccionados. Una vez configurado y revisado, el usuario puede almacenar sus horarios preferidos en el sistema para consultarlos durante la carga académica, complementando su gestión con el acceso directo a enlaces, recursos oficiales e información de los diferentes programas académicos.
 
 Diagrama de Secuencia
-
-Explicar qué proceso representa.
+El proceso inicia cuando el estudiante inicia sesión y comienza a crear un nuevo horario ingresando las materias, grupos y bloques de tiempo correspondientes. A continuación, el sistema verifica que no existan cruces de horarios y que los créditos seleccionados sean válidos según los requisitos establecidos. Si se detectan conflictos o créditos inválidos, el flujo permite realizar correcciones antes de continuar. Finalmente, al superarse las validaciones, el estudiante guarda la configuración para visualizar su horario académico completo de forma organizada.
 
 🎨 5. URL del Prototipo
 
 https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-280&p=f&t=Sawy6N8iSk2v5Boy-0
 
 🗄️ 6. Diseño de Base de Datos
-
-Agregar imagen del modelo.
-Tablas principales
+-> usuariosList: Almacena las cuentas registradas en el sistema (Nombre, Correo institucional, Contraseña, Carrera, Código de estudiante y Semestre).
+-> usuarioActivo: Mantiene la sesión actual del usuario autenticado en el sistema.
+-> clases_[correo]: Colección específica vinculada a cada usuario que almacena el listado de materias agregadas (id, nombre, sede, dia, inicio, fin, color).
+-> misHorarios_[correo]: Almacena los horarios configurados y guardados por el usuario, agrupando el nombre del horario y su respectiva lista de clases asociadas para su consulta en el perfil.
 
 🧩 7. Documentación del Sistema
-Estructura de Carpetas
-/css
-/assets
+El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas y los recursos gráficos:
+/css: Contiene las hojas de estilo dedicadas con un diseño neo-neon dark-themed (estiloperfil.css, estilomishorarios.css, estilo2.css, estilo.css, dashboard.css).
+/assets: Almacena los recursos gráficos e imágenes institucionales y de marca de la aplicación (como logo-sos.png).
 
-Explicar brevemente qué contiene cada carpeta.
 
 🚀 8. Instalación y Ejecución
-
-Explicar cómo correr el proyecto.
+Clonar o descargar todos los archivos del repositorio en una misma carpeta en tu equipo.
+Asegúrate de incluir las páginas principales (index.html, dashboard.html, Perfil.html, PAG1.html, PAG2.html, MisHorarios.html) junto con sus respectivas hojas de estilo en el directorio raíz.
+Abre el archivo index.html directamente en cualquier navegador web moderno (Google Chrome, Microsoft Edge, Brave, etc.).
+Regístrate con un correo institucional, inicia sesión y explora todas las funcionalidades de gestión, validación y creación de horarios académicos.
