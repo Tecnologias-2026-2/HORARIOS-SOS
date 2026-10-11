@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Horarios - HORARIOS SOS</title>
+    <link rel="stylesheet" href="estilomishorarios.css">
+</head>
+
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <div class="logo-group">
+                <span class="logo-sos-cyan">SOS</span>
+                <span class="logo-text">HORARIOS</span>
+                <span class="logo-sos-cyan">SOS</span>
+            </div>
+            <div class="nav-icons">
+                <a href="dashboard.html" class="icon-btn" title="Inicio / Dashboard">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </a>
+                <a href="PAG2.html" class="icon-btn" title="Agregar Clases">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="dashboard.html">Inicio</a>
+            <span class="separator">›</span>
+            <strong>Nuevo Horario</strong>
+        </div>
+
+        <a href="javascript:void(0)" class="cerrar-sesion-btn" onclick="abrirModalLogout()">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+            Cerrar sesión
+        </a>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL DE DOS COLUMNAS -->
+    <div class="main-layout">
+
+        <!-- PANEL LATERAL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- SECCIÓN: MIS HORARIOS GUARDADOS Y CREACIÓN -->
+            <div class="panel-box">
+                <h2>Mis Horarios</h2>
+                <div class="input-container">
+                    <label class="field-label">CARGAR HORARIO GUARDADO</label>
+                    <select id="selectHorariosGuardados" class="input-field"
+                        onchange="cargarHorarioSeleccionado(this.value)">
+                        <option value="">-- Selecciona un horario --</option>
+                    </select>
+                </div>
+
+                <div class="input-container" style="margin-top: 12px;">
+                    <label class="field-label">NOMBRE DEL HORARIO</label>
+                    <input type="text" id="nombreHorarioInput" placeholder="Ej. Semestre 2026-1" class="input-field">
+                </div>
+
+                <div class="sidebar-actions">
+                    <button type="button" class="btn-guardar" onclick="guardarHorarioActual()">Guardar</button>
+                    <button type="button" class="btn-limpiar" onclick="limpiarGrillaActual()">Limpiar</button>
+                </div>
+
+                <div class="secondary-actions" style="margin-top: 10px; display: flex; gap: 8px;">
+                    <button type="button" class="btn-nuevo" onclick="nuevoHorarioLimpo()">+ Nuevo Horario</button>
+                    <button type="button" class="btn-eliminar-horario" onclick="eliminarHorarioSeleccionado()">🗑️
+                        Eliminar</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: MIS CLASES DISPONIBLES -->
+            <div class="panel-box">
+                <div class="classes-panel-header">
+                    <h2>Clases</h2>
+                    <span id="clasesCountBadge" class="clases-badge">0</span>
+                </div>
+
+                <a href="PAG2.html" class="btn-agregar-clases">
+                    Ir a agregar clases +
+                </a>
+
+                <!-- Listado de materias guardadas -->
+                <div id="sidebarClassesList" class="sidebar-classes-list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- CONTENEDOR DE LA GRILLA CALENDARIO (DERECHA) -->
+        <section class="calendar-section">
+            <div class="calendar-grid-container">
+
+                <!-- CABECERA DE DÍAS -->
+                <div class="cal-header-row">
+                    <div class="time-col-header"></div>
+                    <div class="day-header">LUNES</div>
+                    <div class="day-header">MARTES</div>
+                    <div class="day-header">MIÉRCOLES</div>
+                    <div class="day-header">JUEVES</div>
+                    <div class="day-header">VIERNES</div>
+                    <div class="day-header">SÁBADO</div>
+                </div>
+
+                <!-- CUERPO DE HORAS Y CELDAS (06:00 a 22:00) -->
+                <div class="cal-body" id="calendarBody">
+                    <!-- Filas generadas dinámicamente -->
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SCRIPT DE INTERACCIÓN Y PERSISTENCIA -->
+    <script>
+        const calendarBody = document.getElementById('calendarBody');
+        const horas = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
+        const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+        let usuarioActual = null;
+        let clasesUsuario = [];
+        let horariosUsuario = [];
+
+        // Generar grilla base
+        horas.forEach(hora => {
+            let row = document.createElement('div');
+            row.className = 'cal-row';
+
+            let timeLabel = document.createElement('div');
+            timeLabel.className = 'time-label';
+            timeLabel.textContent = hora;
+            row.appendChild(timeLabel);
+
+            diasSemana.forEach(dia => {
+                let cell = document.createElement('div');
+                cell.className = 'cal-cell';
+                cell.dataset.dia = dia;
+                cell.dataset.hora = hora;
+                row.appendChild(cell);
+            });
+
+            calendarBody.appendChild(row);
+        });
+
+        // Inicializar datos al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            usuarioActual = JSON.parse(localStorage.getItem('usuarioActivo'));
+
+            if (usuarioActual && usuarioActual.correo) {
+                // Cargar materias registradas
+                const storedClasses = localStorage.getItem('clases_' + usuarioActual.correo);
+                if (storedClasses) {
+                    clasesUsuario = JSON.parse(storedClasses);
+                }
+
+                // Cargar horarios previamente guardados
+                const storedHorarios = localStorage.getItem('misHorarios_' + usuarioActual.correo);
+                if (storedHorarios) {
+                    horariosUsuario = JSON.parse(storedHorarios);
+                }
+
+                renderSidebarClasses();
+                populateHorariosSelect();
+
+                // Mostrar clases en la grilla si no hay un horario específico seleccionado
+                pintarClasesEnGrilla(clasesUsuario);
+            }
+        });
+
+        // Mostrar listado de materias en la columna izquierda
+        function renderSidebarClasses() {
+            const container = document.getElementById('sidebarClassesList');
+            const badge = document.getElementById('clasesCountBadge');
+            badge.textContent = clasesUsuario.length;
+
+            if (clasesUsuario.length === 0) {
+                container.innerHTML = `
+                    <p class="empty-classes-text">No has guardado clases aún. Usa el botón superior para agregar tu primera materia.</p>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            clasesUsuario.forEach(c => {
+                container.innerHTML += `
+                    <div class="sidebar-class-card" style="border-left: 4px solid ${c.color || '#00ffff'};">
+                        <div class="sidebar-class-info">
+                            <strong>${c.nombre}</strong>
+                            <span>${c.dia} (${c.inicio} - ${c.fin})</span>
+                            <small>📍 ${c.sede}</small>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Llenar selector de horarios guardados
+        function populateHorariosSelect() {
+            const select = document.getElementById('selectHorariosGuardados');
+            select.innerHTML = '<option value="">-- Selecciona un horario --</option>';
+
+            horariosUsuario.forEach(h => {
+                let opt = document.createElement('option');
+                opt.value = h.id;
+                opt.textContent = h.nombre;
+                select.appendChild(opt);
+            });
+        }
+
+        // Cargar las clases del horario guardado que seleccione el usuario
+        function cargarHorarioSeleccionado(horarioId) {
+            limpiarCeldasGrilla();
+
+            if (!horarioId) {
+                // Si deselecciona, muestra todas las clases generales
+                document.getElementById('nombreHorarioInput').value = '';
+                pintarClasesEnGrilla(clasesUsuario);
+                return;
+            }
+
+            const horarioEncontrado = horariosUsuario.find(h => h.id == horarioId);
+            if (horarioEncontrado) {
+                document.getElementById('nombreHorarioInput').value = horarioEncontrado.nombre;
+                pintarClasesEnGrilla(horarioEncontrado.clases || []);
+            }
+        }
+
+        // Renderizar bloques de clases en la grilla visual
+        function pintarClasesEnGrilla(listaClases) {
+            limpiarCeldasGrilla();
+            listaClases.forEach(clase => {
+                const selector = `.cal-cell[data-dia="${clase.dia}"][data-hora="${clase.inicio}"]`;
+                const celda = document.querySelector(selector);
+
+                if (celda) {
+                    let claseCard = document.createElement('div');
+                    claseCard.className = 'clase-item-bloque';
+                    claseCard.style.backgroundColor = clase.color || '#00ffff';
+                    claseCard.innerHTML = `
+                        <strong>${clase.nombre}</strong>
+                        <span>${clase.sede}</span>
+                        <small>${clase.inicio} - ${clase.fin}</small>
+                    `;
+                    celda.appendChild(claseCard);
+                }
+            });
+        }
+
+        function limpiarCeldasGrilla() {
+            document.querySelectorAll('.cal-cell').forEach(cell => cell.innerHTML = '');
+        }
+
+        // Botón: Guardar Horario Actual
+        function guardarHorarioActual() {
+            const nombreHorario = document.getElementById('nombreHorarioInput').value.trim();
+            if (!nombreHorario) {
+                alert('Por favor, ingresa un nombre para el horario.');
+                return;
+            }
+
+            if (!usuarioActual || !usuarioActual.correo) {
+                alert('No hay una sesión activa.');
+                return;
+            }
+
+            if (clasesUsuario.length === 0) {
+                alert('No tienes clases registradas para guardar en un horario.');
+                return;
+            }
+
+            const nuevoHorario = {
+                id: Date.now(),
+                nombre: nombreHorario,
+                clases: Array.from(clasesUsuario) // Guardar copia de las clases
+            };
+
+            const index = horariosUsuario.findIndex(h => h.nombre.toLowerCase() === nombreHorario.toLowerCase());
+            if (index >= 0) {
+                horariosUsuario[index] = nuevoHorario;
+            } else {
+                horariosUsuario.push(nuevoHorario);
+            }
+
+            localStorage.setItem('misHorarios_' + usuarioActual.correo, JSON.stringify(horariosUsuario));
+            populateHorariosSelect();
+            document.getElementById('selectHorariosGuardados').value = nuevoHorario.id;
+
+            alert('¡Horario "' + nombreHorario + '" guardado con éxito!');
+        }
+
+        // Botón: + Nuevo Horario
+        function nuevoHorarioLimpo() {
+            document.getElementById('selectHorariosGuardados').value = '';
+            document.getElementById('nombreHorarioInput').value = '';
+            limpiarCeldasGrilla();
+        }
+
+        // Botón: Limpiar Grilla
+        function limpiarGrillaActual() {
+            limpiarCeldasGrilla();
+        }
+
+        // Botón: Eliminar Horario Seleccionado
+        function eliminarHorarioSeleccionado() {
+            const select = document.getElementById('selectHorariosGuardados');
+            const horarioId = select.value;
+
+            if (!horarioId) {
+                alert('Por favor, selecciona primero un horario guardado para eliminar.');
+                return;
+            }
+
+            const horarioEncontrado = horariosUsuario.find(h => h.id == horarioId);
+            if (confirm(`¿Estás seguro de que deseas eliminar el horario "${horarioEncontrado.nombre}"?`)) {
+                horariosUsuario = horariosUsuario.filter(h => h.id != horarioId);
+                localStorage.setItem('misHorarios_' + usuarioActual.correo, JSON.stringify(horariosUsuario));
+
+                populateHorariosSelect();
+                nuevoHorarioLimpo();
+                alert('Horario eliminado con éxito.');
+            }
+        }
+        // Funciones para el modal de Cerrar Sesión
+        function abrirModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function cerrarModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        function confirmarCierreSesion() {
+            localStorage.removeItem('usuarioActivo');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
+    <div id="logout-modal" class="logout-modal-overlay" aria-hidden="true">
+        <div class="logout-modal-box">
+            <div class="logout-icon-container">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="#ff4d79" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </div>
+
+            <h3>¿Cerrar sesión?</h3>
+            <p>¿Estás seguro de que deseas salir? Puedes seguir explorando <span class="highlight-cyan">Horarios
+                    SOS</span> o cerrar sesión ahora.</p>
+
+            <div class="logout-modal-actions">
+                <button type="button" class="btn-confirm-logout" onclick="confirmarCierreSesion()">Sí, cerrar
+                    sesión</button>
+                <button type="button" class="btn-cancel-logout" onclick="cerrarModalLogout()">Seguir explorando
+                    →</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

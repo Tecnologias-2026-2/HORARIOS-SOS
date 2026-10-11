@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SOS Horarios - Mis Clases</title>
+    <link rel="stylesheet" href="estilo2.css">
+</head>
+
+<body>
+
+    <!-- Barra de arriba -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <!-- Botón de inicio / casita -->
+            <a href="dashboard.html" class="home-btn" aria-label="Inicio">
+                <span class="home-icon">⌂</span>
+            </a>
+
+            <!-- Logo -->
+            <div class="logo">
+                <span class="logo-sos">SOS</span>
+                <span class="logo-horarios">HORARIOS</span>
+                <span class="logo-sos">SOS</span>
+            </div>
+        </div>
+
+        <!-- Ruta de navegación -->
+        <nav class="breadcrumb">
+            <a href="#">Inicio</a>
+            <span>→</span>
+            <strong>Mis Clases</strong>
+        </nav>
+
+        <!-- Cerrar sesión con modal -->
+        <a href="javascript:void(0)" class="cerrar-sesion" onclick="abrirModalLogout()">Cerrar sesión</a>
+    </header>
+
+    <main class="main-container">
+        <!-- Encabezado principal -->
+        <section class="page-header">
+            <span class="badge-materias">MATERIAS</span>
+            <div class="header-row">
+                <div>
+                    <h1>Mis Clases</h1>
+                    <p>Agrega tus materias para luego construir tu horario.</p>
+                </div>
+                <div id="counter-badge" class="counter-badge">0 Clases</div>
+            </div>
+        </section>
+
+        <!-- Botón para volver a la página anterior -->
+        <div class="back-container">
+            <a href="javascript:history.back()" class="back-arrow">←</a>
+        </div>
+
+        <!-- Contenido principal divido en dos columnas -->
+        <div class="content-grid">
+
+            <!-- COLUMNA IZQUIERDA: Listado de Clases Guardadas -->
+            <section class="classes-list-section" id="classesListContainer">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📖</div>
+                    <p>Aún no has agregado clases.</p>
+                    <span class="empty-sub">Usa el formulario para añadir tu primera materia.</span>
+                </div>
+            </section>
+
+            <!-- COLUMNA DERECHA: Formulario para Agregar Clase -->
+            <aside class="form-card">
+                <div class="form-title">
+                    <span class="plus-icon">⊕</span>
+                    <h2>Agregar clase</h2>
+                </div>
+
+                <form id="classForm" onsubmit="addClass(event)">
+                    <div class="input-group">
+                        <label>NOMBRE DE LA MATERIA</label>
+                        <input type="text" id="nombreMateria" placeholder="Ej. Cálculo Diferencial" required>
+                    </div>
+
+                    <!-- Selector de Sede con las 3 opciones -->
+                    <div class="input-group">
+                        <label>SEDE</label>
+                        <select id="sedeMateria" required>
+                            <option value="" disabled selected>Selecciona una sede</option>
+                            <option value="Calle 100">Calle 100</option>
+                            <option value="Campus Cajicá">Campus Cajicá</option>
+                            <option value="Sede Medicina">Sede Medicina</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>DÍA</label>
+                        <select id="diaMateria">
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                        </select>
+                    </div>
+
+                    <!-- Horas de 07:00 h a 23:00 h -->
+                    <div class="time-row">
+                        <div class="input-group">
+                            <label>HORA INICIO</label>
+                            <select id="horaInicio">
+                                <script>
+                                    for (let i = 7; i <= 23; i++) {
+                                        let h = i < 10 ? '0' + i : i;
+                                        document.write('<option value="' + h + ':00">' + h + ':00 </option>');
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>HORA FIN</label>
+                            <select id="horaFin">
+                                <script>
+                                    for (let i = 7; i <= 23; i++) {
+                                        let h = i < 10 ? '0' + i : i;
+                                        let selected = (i === 9) ? ' selected' : '';
+                                        document.write('<option value="' + h + ':00"' + selected + '>' + h + ':00 </option>');
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>COLOR</label>
+                        <div class="color-picker" id="colorPicker">
+                            <div class="color-opt active" style="background: #00ffff;" data-color="#00ffff"></div>
+                            <div class="color-opt" style="background: #70ff00;" data-color="#70ff00"></div>
+                            <div class="color-opt" style="background: #fff000;" data-color="#fff000"></div>
+                            <div class="color-opt" style="background: #ff5500;" data-color="#ff5500"></div>
+                            <div class="color-opt" style="background: #b34cff;" data-color="#b34cff"></div>
+                            <div class="color-opt" style="background: #ff00dd;" data-color="#ff00dd"></div>
+                            <div class="color-opt" style="background: #00e5ff;" data-color="#00e5ff"></div>
+                            <div class="color-opt" style="background: #aaff00;" data-color="#aaff00"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-guardar">Guardar clase</button>
+                </form>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- MENÚ FLOTANTE DE ACCESIBILIDAD (Esquina inferior izquierda) -->
+    <div id="accessibility-menu"
+        style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 250px;">
+
+        <button onclick="toggleAccessibility()"
+            style="width: 100%; background: #202030; color: #00ffff; border: 1px solid #00ffff; padding: 8px 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 8px;">
+            ⚙️ Accesibilidad
+        </button>
+
+        <div id="acc-panel"
+            style="display: none; margin-top: 12px; flex-direction: column; gap: 10px; font-size: 11px; color: #ccc;">
+
+            <!-- Tamaño de texto -->
+            <label style="display: flex; flex-direction: column; gap: 4px;">
+                Tamaño de texto:
+                <input type="range" id="fontSizeRange" min="10" max="22" value="14"
+                    onchange="changeFontSize(this.value)" style="cursor: pointer;">
+            </label>
+
+            <!-- Color de Fondo de la Página -->
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+                Color de Fondo (Página):
+                <input type="color" id="bgColorPicker" value="#090914" onchange="changeBgColor(this.value)"
+                    style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+            </label>
+
+            <!-- Color de Contenedores / Casillas -->
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+                Color de Casillas:
+                <input type="color" id="cardColorPicker" value="#131322" onchange="changeCardsColor(this.value)"
+                    style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+            </label>
+
+            <!-- Tipografía -->
+            <label style="display: flex; flex-direction: column; gap: 4px;">
+                Tipografía:
+                <select id="fontSelect" onchange="changeFontFamily(this.value)"
+                    style="background:#202030; color:white; border:1px solid #444; padding: 4px; border-radius: 4px;">
+                    <option value="Arial">Arial</option>
+                    <option value="Courier New">Courier / Retro</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+            </label>
+        </div>
+    </div>
+
+    <!-- Script de lógica interactiva y persistencia de clases por usuario -->
+    <script>
+        // Funciones del menú de accesibilidad
+        function toggleAccessibility() {
+            let panel = document.getElementById('acc-panel');
+            panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function changeFontSize(size) {
+            document.querySelectorAll('body, p, h1, h2, h3, label, input, select, button').forEach(el => {
+                el.style.fontSize = size + 'px';
+            });
+        }
+
+        function changeBgColor(color) {
+            document.body.style.backgroundColor = color;
+        }
+
+        function changeCardsColor(color) {
+            document.querySelectorAll('.form-card, .class-card-item, .empty-state').forEach(card => {
+                card.style.backgroundColor = color;
+            });
+        }
+
+        function changeFontFamily(font) {
+            document.body.style.fontFamily = font;
+        }
+
+        // Lógica de gestión de clases vinculada al usuario activo
+        let selectedColor = '#00ffff';
+
+        document.querySelectorAll('.color-opt').forEach(item => {
+            item.addEventListener('click', e => {
+                document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedColor = e.target.getAttribute('data-color');
+            });
+        });
+
+        // Cargar clases guardadas del usuario actual al abrir la página
+        let classesArray = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+            if (usuarioActivo && usuarioActivo.correo) {
+                // Recuperar las clases específicas de este usuario usando su correo como clave
+                const storedClasses = localStorage.getItem('clases_' + usuarioActivo.correo);
+                if (storedClasses) {
+                    classesArray = JSON.parse(storedClasses);
+                }
+            }
+            renderClasses();
+        });
+
+        function guardarClasesEnStorage() {
+            const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+            if (usuarioActivo && usuarioActivo.correo) {
+                // Guardar las clases asociadas al correo del usuario activo
+                localStorage.setItem('clases_' + usuarioActivo.correo, JSON.stringify(classesArray));
+            }
+        }
+
+        function addClass(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('nombreMateria').value;
+            const sede = document.getElementById('sedeMateria').value;
+            const dia = document.getElementById('diaMateria').value;
+            const inicio = document.getElementById('horaInicio').value;
+            const fin = document.getElementById('horaFin').value;
+
+            // VALIDACIÓN: Verificar si ya existe una clase el mismo día a la misma hora de inicio
+            const cruceHorario = classesArray.some(c => c.dia === dia && c.inicio === inicio);
+
+            if (cruceHorario) {
+                // Mostrar alerta de cruce de horario
+                mostrarModalErrorDuplicado(`Ya tienes una clase programada el día ${dia} a las ${inicio}. No puedes registrar otra a la misma hora.`);
+                return;
+            }
+
+            const newClass = { id: Date.now(), nombre, sede, dia, inicio, fin, color: selectedColor };
+            classesArray.push(newClass);
+
+            guardarClasesEnStorage();
+            renderClasses();
+            document.getElementById('classForm').reset();
+            document.getElementById('sedeMateria').selectedIndex = 0;
+        }
+
+        // Función para mostrar modal dinámico de error por cruce de horario
+        function mostrarModalErrorDuplicado(mensaje) {
+            // Verificar si ya existe el modal en el DOM, si no, crearlo
+            let modal = document.getElementById('conflict-modal');
+            if (!modal) {
+                const modalHtml = `
+                <div id="conflict-modal" class="modal-overlay active" aria-hidden="false">
+                    <div class="modal-box">
+                        <div class="modal-icon">⚠️</div>
+                        <h3>Conflicto de Horario</h3>
+                        <p id="conflict-message">${mensaje}</p>
+                        <button type="button" onclick="cerrarModalConflicto()">Entendido</button>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            } else {
+                document.getElementById('conflict-message').innerText = mensaje;
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function cerrarModalConflicto() {
+            const modal = document.getElementById('conflict-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+        function deleteClass(id) {
+            classesArray = classesArray.filter(c => c.id !== id);
+            guardarClasesEnStorage();
+            renderClasses();
+        }
+
+        function renderClasses() {
+            const container = document.getElementById('classesListContainer');
+            const counter = document.getElementById('counter-badge');
+            counter.innerText = classesArray.length + (classesArray.length === 1 ? ' Clase' : ' Clases');
+
+            if (classesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">📖</div>
+                        <p>Aún no has agregado clases.</p>
+                        <span class="empty-sub">Usa el formulario para añadir tu primera materia.</span>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            classesArray.forEach(c => {
+                const currentCardBg = document.querySelector('.form-card')?.style.backgroundColor || '';
+                container.innerHTML += `
+                    <div class="class-card-item" style="border-left: 5px solid ${c.color}; ${currentCardBg ? 'background-color: ' + currentCardBg + ';' : ''}">
+                        <div class="class-info">
+                            <h3>${c.nombre}</h3>
+                            <p class="class-day-time">${c.dia} <br> ${c.inicio} - ${c.fin}</p>
+                            <span class="class-location">${c.sede}</span>
+                        </div>
+                        <button onclick="deleteClass(${c.id})" class="btn-delete" title="Eliminar clase">×</button>
+                    </div>
+                `;
+            });
+        }
+        // Funciones para el modal de Cerrar Sesión
+        function abrirModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function cerrarModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        function confirmarCierreSesion() {
+            localStorage.removeItem('usuarioActivo');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
+    <div id="logout-modal" class="logout-modal-overlay" aria-hidden="true">
+        <div class="logout-modal-box">
+            <div class="logout-icon-container">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="#ff4d79" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </div>
+
+            <h3>¿Cerrar sesión?</h3>
+            <p>¿Estás seguro de que deseas salir? Puedes seguir explorando <span class="highlight-cyan">Horarios
+                    SOS</span> o cerrar sesión ahora.</p>
+
+            <div class="logout-modal-actions">
+                <button type="button" class="btn-confirm-logout" onclick="confirmarCierreSesion()">Sí, cerrar
+                    sesión</button>
+                <button type="button" class="btn-cancel-logout" onclick="cerrarModalLogout()">Seguir explorando
+                    →</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
