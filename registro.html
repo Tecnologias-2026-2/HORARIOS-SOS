@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090910">
+  <meta name="description" content="Crea tu cuenta en Horarios SOS.">
+  <title>Crear cuenta · Horarios SOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+  <div class="page-shell">
+    <main class="auth-layout">
+      <section class="showcase" aria-label="Presentación de Horarios SOS">
+        <a class="brand" href="index.html" aria-label="Horarios SOS, inicio">
+          <img class="brand-symbol" src="logo-sos.png" alt="" aria-hidden="true">
+          <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
+        </a>
+
+        <div class="showcase-copy">
+          <p class="eyebrow">SISTEMA ORGANIZADOR DE SEMESTRES</p>
+          <h1>Organiza tu semana <span>académica</span><br class="desktop-break"> sin esfuerzo.</h1>
+          <p class="intro">Visualiza horarios, gestiona materias y nunca<br class="desktop-break"> pierdas una clase.
+          </p>
+        </div>
+
+        <div class="week-preview" aria-label="Vista previa de un horario semanal">
+          <div class="week-days"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span></div>
+          <div class="week-grid" aria-hidden="true">
+            <span class="class-block blue b1"></span>
+            <span class="class-block green b2"></span>
+            <span class="class-block yellow b3"></span>
+            <span class="class-block blue b4"></span>
+            <span class="class-block green b5"></span>
+            <span class="class-block yellow b6"></span>
+            <span class="class-block blue b7"></span>
+            <span class="class-block blue b8"></span>
+            <span class="class-block yellow b9"></span>
+            <span class="class-block green b10"></span>
+            <span class="class-block blue b11"></span>
+          </div>
+        </div>
+
+        <div class="subjects-heading">ESTE SEMESTRE</div>
+        <div class="subject-list" aria-label="Materias de ejemplo">
+          <article class="subject-item subject-cyan"><span class="subject-mark"></span>
+            <div><strong>Cálculo II</strong><small>7:00–9:00 · Aula 301</small></div>
+          </article>
+          <article class="subject-item subject-green"><span class="subject-mark"></span>
+            <div><strong>Programación I</strong><small>9:00–11:00 · Lab Cómputo</small></div>
+          </article>
+          <article class="subject-item subject-yellow"><span class="subject-mark"></span>
+            <div><strong>Física General</strong><small>11:00–13:00 · Aula 108</small></div>
+          </article>
+        </div>
+        <div class="showcase-glow" aria-hidden="true"></div>
+      </section>
+
+      <section class="form-panel" aria-labelledby="form-title">
+        <div class="mobile-brand brand" aria-hidden="true">
+          <img class="brand-symbol" src="logo-sos.png" alt="" aria-hidden="true">
+          <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
+        </div>
+        <div class="form-content register-content">
+          <div class="form-heading">
+            <h2 id="form-title">Crear cuenta</h2>
+            <p>Regístrate con tu correo institucional</p>
+          </div>
+
+          <form id="register-form" novalidate>
+            <div class="field">
+              <label for="register-name">NOMBRE COMPLETO</label>
+              <input id="register-name" name="name" type="text" placeholder="Nombre y apellido" autocomplete="name"
+                required minlength="3">
+            </div>
+            <div class="field">
+              <label for="register-email">CORREO INSTITUCIONAL</label>
+              <input id="register-email" name="email" type="email" placeholder="tu.usuario@unimilitar.edu.co"
+                autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="register-password">CONTRASEÑA</label>
+              <input id="register-password" name="password" type="password" placeholder="Mínimo 8 caracteres"
+                autocomplete="new-password" required minlength="8">
+            </div>
+            <!-- Nuevos campos añadidos -->
+            <div class="field">
+              <label for="register-carrera">CARRERA</label>
+              <input id="register-carrera" name="carrera" type="text" placeholder="Ej. Ingeniería Civil" required>
+            </div>
+            <div class="field">
+              <label for="register-codigo">CÓDIGO DE ESTUDIANTE</label>
+              <input id="register-codigo" name="codigo" type="text" placeholder="Ej. 12070038" required>
+            </div>
+            <div class="field">
+              <label for="register-semestre">SEMESTRE</label>
+              <input id="register-semestre" name="semestre" type="text" placeholder="Ej. Primer Semestre" required>
+            </div>
+
+            <button class="submit-button" type="submit">Registrarme <span aria-hidden="true">→</span></button>
+            <p class="form-feedback" id="register-feedback" role="status" aria-live="polite"></p>
+          </form>
+
+          <script>
+            document.getElementById('register-form').addEventListener('submit', function (event) {
+              event.preventDefault();
+
+              const nombre = document.getElementById('register-name').value;
+              const correo = document.getElementById('register-email').value;
+              const password = document.getElementById('register-password').value;
+              const carrera = document.getElementById('register-carrera').value;
+              const codigo = document.getElementById('register-codigo').value;
+              const semestre = document.getElementById('register-semestre').value;
+
+              // Crear objeto del nuevo usuario
+              const nuevoUsuario = { nombre, correo, password, carrera, codigo, semestre };
+
+              // Obtener la lista actual de usuarios guardados o inicializar un arreglo vacío
+              let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
+
+              // Verificar si el correo ya está registrado
+              const existe = usuarios.some(u => u.correo === correo);
+              if (existe) {
+                alert('Este correo institucional ya está registrado.');
+                return;
+              }
+
+              // Agregar el nuevo usuario a la lista y guardar
+              usuarios.push(nuevoUsuario);
+              localStorage.setItem('usuariosList', JSON.stringify(usuarios));
+
+              // También guardamos el usuario actual en sesión activa
+              localStorage.setItem('usuarioActivo', JSON.stringify(nuevoUsuario));
+
+              alert('¡Registro exitoso!');
+              window.location.href = 'dashboard.html';
+            });
+          </script>
+
+          <p class="switch-copy">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
+</body>
+
+</html>

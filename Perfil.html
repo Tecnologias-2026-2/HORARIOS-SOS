@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - HORARIOS SOS</title>
+    <link rel="stylesheet" href="estiloperfil.css">
+</head>
+
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <!-- Botón de Inicio (Dashboard) -->
+            <a href="dashboard.html" class="home-btn" title="Ir al Dashboard">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </a>
+            <div class="logo">
+                <span class="logo-sos">SOS</span>
+                <span class="logo-horarios">HORARIOS SOS</span>
+            </div>
+        </div>
+        <div class="breadcrumb">
+            <a href="dashboard.html">Inicio</a>
+            <span>→</span>
+            <strong>MI PERFIL</strong>
+        </div>
+        <a href="javascript:void(0)" class="cerrar-sesion" onclick="abrirModalLogout()">Cerrar sesión</a>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+
+        <!-- BOTÓN DE RETROCESO ESTILO NEÓN -->
+        <div class="back-container">
+            <a href="dashboard.html" class="back-arrow" title="Regresar">←</a>
+        </div>
+
+        <!-- TARJETA SUPERIOR DE PERFIL -->
+        <section class="profile-card">
+            <div class="profile-avatar">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="3.2"></circle>
+                    <path d="M5.5 19c.7-3.1 3-5 6.5-5s5.8 1.9 6.5 5"></path>
+                </svg>
+            </div>
+            <div class="profile-info">
+                <h2 id="profile-name-title">Cargando...</h2>
+                <p id="profile-semestre-title">Cargando...</p>
+            </div>
+        </section>
+
+        <!-- CONTENEDOR DE PESTAÑAS (TABS) -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('info', event)"
+                    data-target="info">Información</button>
+                <button class="tab-btn" onclick="switchTab('password', event)"
+                    data-target="password">Contraseña</button>
+                <button class="tab-btn" onclick="switchTab('horarios', event)" data-target="horarios">Horarios</button>
+            </div>
+
+            <!-- PESTAÑA 1: INFORMACIÓN EDITABLE -->
+            <div id="info" class="tab-content active">
+                <form id="info-form" class="form-grid">
+                    <div class="input-group">
+                        <label for="input-name">Nombre Completo:</label>
+                        <input type="text" class="input-box" id="input-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="input-codigo">Código estudiante:</label>
+                        <input type="text" class="input-box" id="input-codigo" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="input-email">Correo Institucional:</label>
+                        <input type="email" class="input-box" id="input-email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="input-carrera">Carrera:</label>
+                        <input type="text" class="input-box" id="input-carrera" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="input-semestre">Semestre:</label>
+                        <input type="text" class="input-box" id="input-semestre" required>
+                    </div>
+                    <div class="input-group full-width-btn">
+                        <button type="submit" class="btn-action btn-cyan">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PESTAÑA 2: CONTRASEÑA -->
+            <div id="password" class="tab-content">
+                <form id="password-form" class="form-grid password-grid">
+                    <div class="input-group full-width">
+                        <label for="info-password">Contraseña Actual:</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="input-box" id="info-password" readonly>
+                            <button type="button" class="toggle-password"
+                                onclick="togglePasswordVisibility('info-password', this)">👁️</button>
+                        </div>
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="new-password">Nueva Contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="input-box" id="new-password" placeholder="Mínimo 6 caracteres"
+                                required minlength="6">
+                            <button type="button" class="toggle-password"
+                                onclick="togglePasswordVisibility('new-password', this)">👁️</button>
+                        </div>
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="confirm-password">Confirmar Contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="input-box" id="confirm-password"
+                                placeholder="Repite la nueva contraseña" required>
+                            <button type="button" class="toggle-password"
+                                onclick="togglePasswordVisibility('confirm-password', this)">👁️</button>
+                        </div>
+                    </div>
+                    <div class="input-group full-width">
+                        <button type="submit" class="btn-action btn-green">Actualizar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- VERSIÓN 3: HORARIOS -->
+            <div id="horarios" class="tab-content">
+                <div class="horarios-container-perfil">
+                    <div class="horarios-header-title">
+                        <div class="calendar-icon-small">📅</div>
+                        <h3>Mis Horarios Guardados</h3>
+                    </div>
+
+                    <!-- Contenedor donde se listarán los horarios guardados -->
+                    <div id="listaMisHorarios" class="lista-horarios-grid">
+                        <!-- Se llena dinámicamente con JavaScript -->
+                    </div>
+
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="mishorarios.html" class="btn-crear-horario">Crear o editar horario →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SCRIPTS DE PERSISTENCIA Y PESTAÑAS -->
+    <script>
+        // Cargar datos del usuario que inició sesión desde localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {
+                nombre: 'Oscar Ortiz E.',
+                correo: 'est.Oscar.OrtizE@unimilitar.edu.co',
+                password: '',
+                carrera: 'Ingeniería Civil',
+                codigo: '12070038',
+                semestre: 'Primer Semestre'
+            };
+
+            // Pintar cabecera superior
+            document.getElementById('profile-name-title').textContent = usuarioActivo.nombre || 'Oscar Ortiz E.';
+            document.getElementById('profile-semestre-title').textContent = usuarioActivo.semestre || 'Primer Semestre';
+
+            // Pintar campos de Información
+            document.getElementById('input-name').value = usuarioActivo.nombre || '';
+            document.getElementById('input-email').value = usuarioActivo.correo || '';
+            document.getElementById('input-carrera').value = usuarioActivo.carrera || '';
+            document.getElementById('input-codigo').value = usuarioActivo.codigo || '';
+            document.getElementById('input-semestre').value = usuarioActivo.semestre || '';
+
+            // Pintar Contraseña registrada del usuario
+            document.getElementById('info-password').value = usuarioActivo.password || '';
+        });
+
+        // Guardar cambios de Información Personal
+        document.getElementById('info-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {};
+
+            const correoAnterior = usuarioActivo.correo;
+
+            usuarioActivo.nombre = document.getElementById('input-name').value;
+            usuarioActivo.correo = document.getElementById('input-email').value;
+            usuarioActivo.codigo = document.getElementById('input-codigo').value;
+            usuarioActivo.carrera = document.getElementById('input-carrera').value;
+            usuarioActivo.semestre = document.getElementById('input-semestre').value;
+
+            // Guardar usuario en sesión activa
+            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+
+            // Sincronizar actualización en la lista general de usuarios
+            let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
+            usuarios = usuarios.map(u => (u.correo === correoAnterior || u.correo === usuarioActivo.correo) ? usuarioActivo : u);
+            localStorage.setItem('usuariosList', JSON.stringify(usuarios));
+
+            alert('¡Información actualizada correctamente!');
+            location.reload();
+        });
+
+        // Actualizar Contraseña del Usuario
+        document.getElementById('password-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const currentPass = document.getElementById('info-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            if (newPass !== confirmPass) {
+                alert('La nueva contraseña y su confirmación no coinciden.');
+                return;
+            }
+
+            let usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {};
+            usuarioActivo.password = newPass;
+
+            // Guardar nueva contraseña en la sesión activa
+            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
+
+            // Sincronizar en la lista global de usuarios
+            let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
+            usuarios = usuarios.map(u => u.correo === usuarioActivo.correo ? usuarioActivo : u);
+            localStorage.setItem('usuariosList', JSON.stringify(usuarios));
+
+            alert('¡Contraseña actualizada con éxito!');
+            location.reload();
+        });
+
+        // Alternar ver/ocultar contraseña con el botón de ojo
+        function togglePasswordVisibility(inputId, button) {
+            const field = document.getElementById(inputId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                field.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        // Navegación interactiva entre las 3 pestañas
+        function switchTab(tabId, evt) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+        // Cargar los horarios guardados del usuario al iniciar el perfil
+        window.addEventListener('DOMContentLoaded', () => {
+            // ... (código existente de carga de perfil y contraseña) ...
+
+            // Cargar horarios guardados
+            const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+            if (usuarioActivo && usuarioActivo.correo) {
+                const misHorariosContainer = document.getElementById('listaMisHorarios');
+                const horariosGuardados = JSON.parse(localStorage.getItem('misHorarios_' + usuarioActivo.correo)) || [];
+
+                if (horariosGuardados.length === 0) {
+                    misHorariosContainer.innerHTML = `
+                        <p style="color: #777783; font-size: 13px; text-align: center; grid-column: span 2;">
+                            Aún no has guardado ningún horario. Ve a "Crear nuevo horario" para armar y guardar uno.
+                        </p>`;
+                } else {
+                    misHorariosContainer.innerHTML = '';
+                    horariosGuardados.forEach(h => {
+                        let clasesHtml = h.clases.map(c => `
+                            <div class="horario-mini-clase" style="border-left: 3px solid ${c.color || '#00ffff'}">
+                                <strong>${c.nombre}</strong>
+                                <span>${c.dia} (${c.inicio} - ${c.fin})</span>
+                                <small>${c.sede}</small>
+                            </div>
+                        `).join('');
+
+                        misHorariosContainer.innerHTML += `
+                            <div class="horario-card-item">
+                                <div class="horario-card-title">
+                                    <h4>📚 ${h.nombre}</h4>
+                                    <span class="badge-clases-count">${h.clases.length} clases</span>
+                                </div>
+                                <div class="horario-mini-list">
+                                    ${clasesHtml}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        });
+        // Abrir el modal de confirmación de salida
+        function abrirModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        // Cerrar el modal si el usuario decide quedarse
+        function cerrarModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        // Confirmar y salir de la sesión
+        function confirmarCierreSesion() {
+            localStorage.removeItem('usuarioActivo');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+
+    <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
+    <div id="logout-modal" class="logout-modal-overlay" aria-hidden="true">
+        <div class="logout-modal-box">
+            <div class="logout-icon-container">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="#ff4d79" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </div>
+
+            <h3>¿Cerrar sesión?</h3>
+            <p>¿Estás seguro de que deseas salir? Puedes seguir explorando <span class="highlight-cyan">Horarios
+                    SOS</span> o cerrar sesión ahora.</p>
+
+            <div class="logout-modal-actions">
+                <button type="button" class="btn-confirm-logout" onclick="confirmarCierreSesion()">Sí, cerrar
+                    sesión</button>
+                <button type="button" class="btn-cancel-logout" onclick="cerrarModalLogout()">Seguir explorando
+                    →</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
