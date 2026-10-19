@@ -37,7 +37,7 @@ El proceso inicia cuando el estudiante inicia sesión y comienza a crear un nuev
 
 🎨 5. URL del Prototipo
 
-https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-280&t=8mYn13gxG4X1bGQu-1
+https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-281&t=DMZvwGp7xpiRKpT4-1
 
 🗄️ 6. Diseño de Base de Datos
 -> usuariosList: Almacena las cuentas registradas en el sistema (Nombre, Correo institucional, Contraseña, Código de estudiante y Semestre).
