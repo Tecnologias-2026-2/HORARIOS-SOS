@@ -1,10 +1,6 @@
-Completar por grupo
-
 🌐 Nombre del Proyecto: Horarios SoS
 
-
-Escribe aquí una descripción corta del proyecto.
-Se propone el desarrollo de una aplicación que facilite la creación y organización de horarios para los estudiantes, previa a la carga académica en la plataforma Univex.
+Horarios SOS es una aplicación web y móvil que permite a los estudiantes universitarios registrarse con su cuenta institucional, gestionar las materias que van a cursar, crear, guardar y visualizar diferentes alternativas de horarios teniendo en cuenta la sede donde se imparte cada materia, con el objetivo de elegir la opción que mejor se adapte a sus necesidades antes de realizar la carga académica oficial en la plataforma Univex.
 
 👥 Integrantes:
 
@@ -15,20 +11,18 @@ Alejandro Salazar Ortiz - 1202836
 Danna Mychelle Bravo Aguilar - 1202820
 
 
-🎯 1. Objetivo General
-Esta iniciativa surge a partir de la pregunta sobre por qué se desarrolla esta propuesta y cuáles son los beneficios que ofrece. La razón principal es que la planificación previa a la carga académica es una práctica común entre los estudiantes, quienes buscan organizar y evaluar diferentes opciones de horarios y combinaciones de grupos para identificar las alternativas que mejor se ajusten a sus necesidades. Sin embargo, este proceso suele volverse confuso, ya que es fácil cometer errores al comparar horas, mezclar grupos o perder el orden de las opciones disponibles. Ante esta situación, la aplicación permitiría mantener una organización clara y estructurada de los horarios, facilitaría la visualización de las combinaciones posibles y contribuyendo a reducir errores, confusiones y el estrés durante el proceso de carga académica.
+🎯 1. Objetivo General:Esta iniciativa surge a partir de la pregunta sobre por qué se desarrolla esta propuesta y cuáles son los beneficios que ofrece. La razón principal es que la planificación previa a la carga académica es una práctica común entre los estudiantes, quienes buscan organizar y evaluar diferentes opciones de horarios y combinaciones de grupos para identificar las alternativas que mejor se ajusten a sus necesidades. Sin embargo, este proceso suele volverse confuso, ya que es fácil cometer errores al comparar horas, mezclar grupos o perder el orden de las opciones disponibles. Ante esta situación, la aplicación permitiría mantener una organización clara y estructurada de los horarios, facilitaría la visualización de las combinaciones posibles y contribuyendo a reducir errores, confusiones y el estrés durante el proceso de carga académica.
 
-🌍 2. Contexto de Uso
-Esta aplicación está dirigida a estudiantes universitarios de la Universidad Militar Nueva Granada. Su objetivo es facilitar la planificación de horarios con anticipación, ayudando a simplificar el proceso frustrante que puede ser la organización manual de los horarios.
+🌍 2. Contexto de Uso: Esta aplicación está dirigida a estudiantes universitarios de la Universidad Militar Nueva Granada. Su objetivo es facilitar la planificación de horarios con anticipación, ayudando a simplificar el proceso frustrante que puede ser la organización manual de los horarios.
 
 📋 3. Requerimientos del Sistema
-3.1 Requerimientos Funcionales
+Requerimientos Funcionales:
 -> El usuario puede registrarse en la aplicación mediante una cuenta vinculada a su correo electrónico. 
 -> Dar la posibilidad de guardar múltiples combinaciones de horarios, junto con una lista organizada de los grupos y clases incluidas.
 -> Implementar la opción de ingresar bloques de horario para cada grupo y clase de manera personalizada.
 -> Permitir al usuario trabajar con un horario en blanco donde pueda combinar las opciones ingresadas previamente.  
 
-Escriban cómo debe comportarse el sistema.
+Cómo debe comportarse el sistema:
 -> Alertar al usuario cuando se pasa de créditos en un horario o está por debajo de la cantidad por semestre.
 -> No permitir que dos diferentes materias o grupos de se crucen. 
 -> Tener un apartado donde se encuentre los enlaces de las distintas páginas web donde se puede consultar información sobre la carga académica, además de los horarios publicados para el semestre por la universidad para las diferentes carreras.
@@ -43,10 +37,10 @@ El proceso inicia cuando el estudiante inicia sesión y comienza a crear un nuev
 
 🎨 5. URL del Prototipo
 
-https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-280&p=f&t=Sawy6N8iSk2v5Boy-0
+https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-280&t=8mYn13gxG4X1bGQu-1
 
 🗄️ 6. Diseño de Base de Datos
--> usuariosList: Almacena las cuentas registradas en el sistema (Nombre, Correo institucional, Contraseña, Carrera, Código de estudiante y Semestre).
+-> usuariosList: Almacena las cuentas registradas en el sistema (Nombre, Correo institucional, Contraseña, Código de estudiante y Semestre).
 -> usuarioActivo: Mantiene la sesión actual del usuario autenticado en el sistema.
 -> clases_[correo]: Colección específica vinculada a cada usuario que almacena el listado de materias agregadas (id, nombre, sede, dia, inicio, fin, color).
 -> misHorarios_[correo]: Almacena los horarios configurados y guardados por el usuario, agrupando el nombre del horario y su respectiva lista de clases asociadas para su consulta en el perfil.
