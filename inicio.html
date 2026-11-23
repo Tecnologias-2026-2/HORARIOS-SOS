@@ -105,21 +105,31 @@
   </div>
   <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
 
-  <script>
-    document.getElementById('login-form').addEventListener('submit', function (event) {
+  <script type="module">
+    import { iniciarSesion } from './js/auth.js';
+    import { esErrorDeCredenciales, mensajeError } from './js/utils.js';
+
+    const form = document.getElementById('login-form');
+
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
-      const correoIngresado = document.getElementById('login-email').value.trim();
+      const correoIngresado = document.getElementById('login-email').value.trim().toLowerCase();
       const passwordIngresado = document.getElementById('login-password').value;
 
-      const usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
-      const usuarioEncontrado = usuarios.find(u => u.correo === correoIngresado && u.password === passwordIngresado);
+      const boton = form.querySelector('button[type="submit"]');
+      boton.disabled = true;
 
-      if (usuarioEncontrado) {
-        localStorage.setItem('usuarioActivo', JSON.stringify(usuarioEncontrado));
+      try {
+        await iniciarSesion(correoIngresado, passwordIngresado);
         window.location.href = 'dashboard.html';
-      } else {
-        mostrarModalError();
+      } catch (error) {
+        if (esErrorDeCredenciales(error)) {
+          mostrarModalError();
+        } else {
+          alert(mensajeError(error));
+        }
+        boton.disabled = false;
       }
     });
 
@@ -134,7 +144,9 @@
       modal.classList.remove('active');
       modal.setAttribute('aria-hidden', 'true');
     }
-    
+
+    // El botón del modal usa onclick="cerrarModalError()", así que debe ser global.
+    window.cerrarModalError = cerrarModalError;
   </script>
   <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
     <button type="button" onclick="toggleAccessibility()" aria-expanded="false" id="acc-toggle-btn"

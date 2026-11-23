@@ -249,27 +249,11 @@
         function changeFontFamily(font) {
             document.body.style.fontFamily = font;
         }
+    </script>
 
-        function abrirModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.add('active');
-                modal.setAttribute('aria-hidden', 'false');
-            }
-        }
-
-        function cerrarModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.setAttribute('aria-hidden', 'true');
-            }
-        }
-
-        function confirmarCierreSesion() {
-            localStorage.removeItem('usuarioActivo');
-            window.location.href = 'index.html';
-        }
+    <!-- Exige sesión iniciada y conecta el modal de cerrar sesión -->
+    <script type="module">
+        import './js/sesion.js';
     </script>
 
     <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->

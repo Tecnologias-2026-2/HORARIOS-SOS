@@ -1,0 +1,66 @@
+rules_version = '2';
+
+// =====================================================================
+// Reglas de seguridad de Firestore — Horarios SOS
+// Cópialas en: Firebase Console → Firestore Database → Reglas → Publicar
+//
+// Idea central: cada estudiante solo puede leer y escribir lo que cuelga
+// de su propio documento usuarios/{uid}. Nadie más (ni sin sesión) puede.
+// =====================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esDueno(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function textoValido(valor, max) {
+      return valor is string && valor.size() > 0 && valor.size() <= max;
+    }
+
+    function perfilValido(d) {
+      return d.keys().hasAll(['nombre', 'correo', 'carrera', 'codigo', 'semestre'])
+        && d.keys().hasOnly(['nombre', 'correo', 'carrera', 'codigo', 'semestre', 'creadoEn', 'actualizadoEn'])
+        && textoValido(d.nombre, 120)
+        && textoValido(d.correo, 254)
+        && textoValido(d.carrera, 120)
+        && textoValido(d.codigo, 40)
+        && textoValido(d.semestre, 60);
+    }
+
+    function claseValida(d) {
+      return d.keys().hasAll(['nombre', 'sede', 'dia', 'inicio', 'fin', 'color'])
+        && d.keys().hasOnly(['nombre', 'sede', 'dia', 'inicio', 'fin', 'color', 'creadoEn'])
+        && textoValido(d.nombre, 120)
+        && textoValido(d.sede, 60)
+        && textoValido(d.dia, 20)
+        && textoValido(d.inicio, 5)
+        && textoValido(d.fin, 5)
+        && textoValido(d.color, 9);
+    }
+
+    function horarioValido(d) {
+      return d.keys().hasAll(['nombre', 'clases'])
+        && d.keys().hasOnly(['nombre', 'clases', 'creadoEn', 'actualizadoEn'])
+        && textoValido(d.nombre, 120)
+        && d.clases is list
+        && d.clases.size() <= 100;
+    }
+
+    match /usuarios/{uid} {
+      allow read: if esDueno(uid);
+      allow create, update: if esDueno(uid) && perfilValido(request.resource.data);
+      allow delete: if false;
+
+      match /clases/{claseId} {
+        allow read, delete: if esDueno(uid);
+        allow create, update: if esDueno(uid) && claseValida(request.resource.data);
+      }
+
+      match /horarios/{horarioId} {
+        allow read, delete: if esDueno(uid);
+        allow create, update: if esDueno(uid) && horarioValido(request.resource.data);
+      }
+    }
+  }
+}

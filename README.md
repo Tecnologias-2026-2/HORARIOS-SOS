@@ -40,19 +40,30 @@ El proceso inicia cuando el estudiante inicia sesión y comienza a crear un nuev
 https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-281&t=DMZvwGp7xpiRKpT4-1
 
 🗄️ 6. Diseño de Base de Datos
--> usuariosList: Almacena las cuentas registradas en el sistema (Nombre, Correo institucional, Contraseña, Código de estudiante y Semestre).
--> usuarioActivo: Mantiene la sesión actual del usuario autenticado en el sistema.
--> clases_[correo]: Colección específica vinculada a cada usuario que almacena el listado de materias agregadas (id, nombre, sede, dia, inicio, fin, color).
--> misHorarios_[correo]: Almacena los horarios configurados y guardados por el usuario, agrupando el nombre del horario y su respectiva lista de clases asociadas para su consulta en el perfil.
+La aplicación usa Firebase: Authentication (correo y contraseña) para las cuentas y Cloud Firestore para los datos. Todo cuelga del uid del usuario, de modo que cada estudiante solo accede a su propia información (ver firestore.rules).
+-> Firebase Authentication: gestiona el registro, el inicio de sesión y la sesión activa. La contraseña la guarda Firebase y nunca se almacena en Firestore. Reemplaza a usuariosList y usuarioActivo.
+-> usuarios/{uid}: perfil del estudiante (nombre, correo, carrera, codigo, semestre, creadoEn, actualizadoEn).
+-> usuarios/{uid}/clases/{claseId}: materias agregadas por el usuario (nombre, sede, dia, inicio, fin, color, creadoEn). Reemplaza a clases_[correo].
+-> usuarios/{uid}/horarios/{horarioId}: horarios guardados (nombre, clases[ {nombre, sede, dia, inicio, fin, color} ], creadoEn, actualizadoEn). Reemplaza a misHorarios_[correo].
 
 🧩 7. Documentación del Sistema
-El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas y los recursos gráficos:
+El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas, la lógica de Firebase y los recursos gráficos:
 /css: Contiene las hojas de estilo dedicadas con un diseño dark-themed y detalles neón (styles.css, dashboard.css, estilo.css, estilomishorarios.css, estiloperfil.css).
 /assets: Almacena los recursos gráficos e imágenes de marca de la aplicación (como logo-sos.png).
-
+/js: Lógica de Firebase compartida por las páginas: auth.js (registro, inicio y cierre de sesión, cambio de contraseña), db.js (lectura y escritura en Firestore), sesion.js (protege las páginas privadas y conecta el cierre de sesión) y utils.js (utilidades y mensajes de error).
+firebaseconfig.js: Inicializa Firebase (app, auth y db) y lo importan los módulos de /js.
+firestore.rules: Reglas de seguridad de Firestore que se publican en Firebase Console.
 
 🚀 8. Instalación y Ejecución
 Clonar o descargar todos los archivos del repositorio en una misma carpeta en tu equipo.
-Asegúrate de incluir las páginas principales (index.html, dashboard.html, Perfil.html, PAG1.html, PAG2.html, MisHorarios.html) junto con sus respectivas hojas de estilo en el directorio raíz.
-Abre el archivo index.html directamente en cualquier navegador web moderno (Google Chrome, Microsoft Edge, Brave, etc.).
-Regístrate con un correo institucional, inicia sesión y explora todas las funcionalidades de gestión, validación y creación de horarios académicos.
+
+Configuración de Firebase (una sola vez, en https://console.firebase.google.com, proyecto horarios-sos):
+-> Authentication → Sign-in method: habilitar el proveedor "Correo electrónico/contraseña".
+-> Firestore Database: crear la base de datos. No hace falta crear colecciones ni campos a mano: se crean solos la primera vez que se guarda un dato.
+-> Firestore Database → Reglas: pegar el contenido de firestore.rules y pulsar "Publicar".
+-> Authentication → Settings → Authorized domains: localhost viene autorizado; si se publica el sitio (por ejemplo en GitHub Pages) hay que agregar ese dominio.
+
+Ejecución: como el código usa módulos de JavaScript y Firebase Authentication, ya NO se puede abrir index.html con doble clic (file://). Hay que servir la carpeta con un servidor local, por ejemplo:
+-> Con Python: ejecutar "python -m http.server 5500" dentro de la carpeta y abrir http://localhost:5500
+-> Con VS Code: instalar la extensión Live Server y pulsar "Go Live" sobre index.html.
+Luego regístrate con un correo institucional, inicia sesión y explora todas las funcionalidades de gestión, validación y creación de horarios académicos.

@@ -149,27 +149,9 @@
     </div>
   </div>
 
-  <script>
-    function abrirModalLogout() {
-      const modal = document.getElementById('logout-modal');
-      if (modal) {
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-      }
-    }
-
-    function cerrarModalLogout() {
-      const modal = document.getElementById('logout-modal');
-      if (modal) {
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
-      }
-    }
-
-    function confirmarCierreSesion() {
-      localStorage.removeItem('usuarioActivo');
-      window.location.href = 'index.html';
-    }
+  <!-- Exige sesión iniciada y conecta el modal de cerrar sesión -->
+  <script type="module">
+    import './js/sesion.js';
   </script>
   <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
     <button type="button" onclick="toggleAccessibility()" aria-expanded="false" id="acc-toggle-btn"

@@ -131,8 +131,12 @@
 
     </main>
 
-    <!-- SCRIPT DE INTERACCIÓN Y PERSISTENCIA -->
-    <script>
+    <!-- SCRIPT DE INTERACCIÓN Y PERSISTENCIA (Firestore: usuarios/{uid}/clases y /horarios) -->
+    <script type="module">
+        import { usuarioListo } from './js/sesion.js';
+        import { listarClases, listarHorarios, guardarHorario, eliminarHorario } from './js/db.js';
+        import { escapeHtml, mensajeError } from './js/utils.js';
+
         const calendarBody = document.getElementById('calendarBody');
         const horas = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
         const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -161,26 +165,6 @@
             calendarBody.appendChild(row);
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            usuarioActual = JSON.parse(localStorage.getItem('usuarioActivo'));
-
-            if (usuarioActual && usuarioActual.correo) {
-                const storedClasses = localStorage.getItem('clases_' + usuarioActual.correo);
-                if (storedClasses) {
-                    clasesUsuario = JSON.parse(storedClasses);
-                }
-
-                const storedHorarios = localStorage.getItem('misHorarios_' + usuarioActual.correo);
-                if (storedHorarios) {
-                    horariosUsuario = JSON.parse(storedHorarios);
-                }
-
-                renderSidebarClasses();
-                populateHorariosSelect();
-                pintarClasesEnGrilla(clasesUsuario);
-            }
-        });
-
         function renderSidebarClasses() {
             const container = document.getElementById('sidebarClassesList');
             const badge = document.getElementById('clasesCountBadge');
@@ -196,11 +180,11 @@
             container.innerHTML = '';
             clasesUsuario.forEach(c => {
                 container.innerHTML += `
-                    <div class="sidebar-class-card" style="border-left: 4px solid ${c.color || '#00ffff'};">
+                    <div class="sidebar-class-card" style="border-left: 4px solid ${escapeHtml(c.color || '#00ffff')};">
                         <div class="sidebar-class-info">
-                            <strong>${c.nombre}</strong>
-                            <span>${c.dia} (${c.inicio} - ${c.fin})</span>
-                            <small>📍 ${c.sede}</small>
+                            <strong>${escapeHtml(c.nombre)}</strong>
+                            <span>${escapeHtml(c.dia)} (${escapeHtml(c.inicio)} - ${escapeHtml(c.fin)})</span>
+                            <small>📍 ${escapeHtml(c.sede)}</small>
                         </div>
                     </div>
                 `;
@@ -228,7 +212,7 @@
                 return;
             }
 
-            const horarioEncontrado = horariosUsuario.find(h => h.id == horarioId);
+            const horarioEncontrado = horariosUsuario.find(h => h.id === horarioId);
             if (horarioEncontrado) {
                 document.getElementById('nombreHorarioInput').value = horarioEncontrado.nombre;
                 pintarClasesEnGrilla(horarioEncontrado.clases || []);
@@ -246,9 +230,9 @@
                     claseCard.className = 'clase-item-bloque';
                     claseCard.style.backgroundColor = clase.color || '#00ffff';
                     claseCard.innerHTML = `
-                        <strong>${clase.nombre}</strong>
-                        <span>${clase.sede}</span>
-                        <small>${clase.inicio} - ${clase.fin}</small>
+                        <strong>${escapeHtml(clase.nombre)}</strong>
+                        <span>${escapeHtml(clase.sede)}</span>
+                        <small>${escapeHtml(clase.inicio)} - ${escapeHtml(clase.fin)}</small>
                     `;
                     celda.appendChild(claseCard);
                 }
@@ -259,14 +243,14 @@
             document.querySelectorAll('.cal-cell').forEach(cell => cell.innerHTML = '');
         }
 
-        function guardarHorarioActual() {
+        async function guardarHorarioActual() {
             const nombreHorario = document.getElementById('nombreHorarioInput').value.trim();
             if (!nombreHorario) {
                 alert('Por favor, ingresa un nombre para el horario.');
                 return;
             }
 
-            if (!usuarioActual || !usuarioActual.correo) {
+            if (!usuarioActual) {
                 alert('No hay una sesión activa.');
                 return;
             }
@@ -276,24 +260,29 @@
                 return;
             }
 
-            const nuevoHorario = {
-                id: Date.now(),
-                nombre: nombreHorario,
-                clases: Array.from(clasesUsuario)
-            };
+            // Si ya existe un horario con ese nombre, se actualiza en lugar de duplicarlo.
+            const existente = horariosUsuario.find(h => h.nombre.toLowerCase() === nombreHorario.toLowerCase());
 
-            const index = horariosUsuario.findIndex(h => h.nombre.toLowerCase() === nombreHorario.toLowerCase());
-            if (index >= 0) {
-                horariosUsuario[index] = nuevoHorario;
-            } else {
-                horariosUsuario.push(nuevoHorario);
+            try {
+                const guardado = await guardarHorario(usuarioActual.uid, {
+                    id: existente?.id,
+                    nombre: nombreHorario,
+                    clases: clasesUsuario
+                });
+
+                if (existente) {
+                    horariosUsuario = horariosUsuario.map(h => h.id === guardado.id ? guardado : h);
+                } else {
+                    horariosUsuario.push(guardado);
+                }
+
+                populateHorariosSelect();
+                document.getElementById('selectHorariosGuardados').value = guardado.id;
+
+                alert('¡Horario "' + nombreHorario + '" guardado con éxito!');
+            } catch (error) {
+                alert(mensajeError(error));
             }
-
-            localStorage.setItem('misHorarios_' + usuarioActual.correo, JSON.stringify(horariosUsuario));
-            populateHorariosSelect();
-            document.getElementById('selectHorariosGuardados').value = nuevoHorario.id;
-
-            alert('¡Horario "' + nombreHorario + '" guardado con éxito!');
         }
 
         function nuevoHorarioLimpo() {
@@ -306,7 +295,7 @@
             limpiarCeldasGrilla();
         }
 
-        function eliminarHorarioSeleccionado() {
+        async function eliminarHorarioSeleccionado() {
             const select = document.getElementById('selectHorariosGuardados');
             const horarioId = select.value;
 
@@ -315,37 +304,43 @@
                 return;
             }
 
-            const horarioEncontrado = horariosUsuario.find(h => h.id == horarioId);
+            const horarioEncontrado = horariosUsuario.find(h => h.id === horarioId);
             if (confirm(`¿Estás seguro de que deseas eliminar el horario "${horarioEncontrado.nombre}"?`)) {
-                horariosUsuario = horariosUsuario.filter(h => h.id != horarioId);
-                localStorage.setItem('misHorarios_' + usuarioActual.correo, JSON.stringify(horariosUsuario));
+                try {
+                    await eliminarHorario(usuarioActual.uid, horarioId);
+                    horariosUsuario = horariosUsuario.filter(h => h.id !== horarioId);
 
-                populateHorariosSelect();
-                nuevoHorarioLimpo();
-                alert('Horario eliminado con éxito.');
+                    populateHorariosSelect();
+                    nuevoHorarioLimpo();
+                    alert('Horario eliminado con éxito.');
+                } catch (error) {
+                    alert(mensajeError(error));
+                }
             }
         }
 
-        function abrirModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.add('active');
-                modal.setAttribute('aria-hidden', 'false');
-            }
-        }
+        // Los atributos onclick/onchange del HTML necesitan funciones globales.
+        Object.assign(window, {
+            cargarHorarioSeleccionado,
+            guardarHorarioActual,
+            limpiarGrillaActual,
+            nuevoHorarioLimpo,
+            eliminarHorarioSeleccionado
+        });
 
-        function cerrarModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.setAttribute('aria-hidden', 'true');
-            }
+        // Carga inicial: espera la sesión y trae clases y horarios desde Firestore.
+        usuarioActual = await usuarioListo;
+        try {
+            [clasesUsuario, horariosUsuario] = await Promise.all([
+                listarClases(usuarioActual.uid),
+                listarHorarios(usuarioActual.uid)
+            ]);
+        } catch (error) {
+            alert(mensajeError(error));
         }
-
-        function confirmarCierreSesion() {
-            localStorage.removeItem('usuarioActivo');
-            window.location.href = 'index.html';
-        }
+        renderSidebarClasses();
+        populateHorariosSelect();
+        pintarClasesEnGrilla(clasesUsuario);
     </script>
 
     <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->

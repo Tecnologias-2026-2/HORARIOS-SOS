@@ -80,7 +80,7 @@
                     </div>
                     <div class="input-group">
                         <label for="input-email">Correo Institucional:</label>
-                        <input type="email" class="input-box" id="input-email" required>
+                        <input type="email" class="input-box" id="input-email" readonly title="El correo institucional no se puede modificar">
                     </div>
                     <div class="input-group">
                         <label for="input-carrera">Carrera:</label>
@@ -102,7 +102,7 @@
                     <div class="input-group full-width">
                         <label for="info-password">Contraseña Actual:</label>
                         <div class="password-wrapper">
-                            <input type="password" class="input-box" id="info-password" readonly>
+                            <input type="password" class="input-box" id="info-password" placeholder="Escribe tu contraseña actual" autocomplete="current-password" required>
                             <button type="button" class="toggle-password" aria-label="Mostrar u ocultar contraseña actual"
                                 onclick="togglePasswordVisibility('info-password', this)">👁️</button>
                         </div>
@@ -152,110 +152,8 @@
 
     </main>
 
-    <!-- SCRIPTS DE PERSISTENCIA Y PESTAÑAS -->
+    <!-- PESTAÑAS Y VISIBILIDAD DE CONTRASEÑA (solo interfaz) -->
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {
-                nombre: 'Oscar Ortiz E.',
-                correo: 'est.Oscar.OrtizE@unimilitar.edu.co',
-                password: '',
-                carrera: 'Ingeniería Civil',
-                codigo: '12070038',
-                semestre: 'Primer Semestre'
-            };
-
-            document.getElementById('profile-name-title').textContent = usuarioActivo.nombre || 'Oscar Ortiz E.';
-            document.getElementById('profile-semestre-title').textContent = usuarioActivo.semestre || 'Primer Semestre';
-
-            document.getElementById('input-name').value = usuarioActivo.nombre || '';
-            document.getElementById('input-email').value = usuarioActivo.correo || '';
-            document.getElementById('input-carrera').value = usuarioActivo.carrera || '';
-            document.getElementById('input-codigo').value = usuarioActivo.codigo || '';
-            document.getElementById('input-semestre').value = usuarioActivo.semestre || '';
-            document.getElementById('info-password').value = usuarioActivo.password || '';
-
-            if (usuarioActivo && usuarioActivo.correo) {
-                const misHorariosContainer = document.getElementById('listaMisHorarios');
-                const horariosGuardados = JSON.parse(localStorage.getItem('misHorarios_' + usuarioActivo.correo)) || [];
-
-                if (horariosGuardados.length === 0) {
-                    misHorariosContainer.innerHTML = `
-                        <p style="color: #777783; font-size: 13px; text-align: center; grid-column: span 2;">
-                            Aún no has guardado ningún horario. Ve a "Crear o editar horario" para armar y guardar uno.
-                        </p>`;
-                } else {
-                    misHorariosContainer.innerHTML = '';
-                    horariosGuardados.forEach(h => {
-                        let clasesHtml = h.clases.map(c => `
-                            <div class="horario-mini-clase" style="border-left: 3px solid ${c.color || '#00ffff'}">
-                                <strong>${c.nombre}</strong>
-                                <span>${c.dia} (${c.inicio} - ${c.fin})</span>
-                                <small>${c.sede}</small>
-                            </div>
-                        `).join('');
-
-                        misHorariosContainer.innerHTML += `
-                            <div class="horario-card-item">
-                                <div class="horario-card-title">
-                                    <h4>📚 ${h.nombre}</h4>
-                                    <span class="badge-clases-count">${h.clases.length} clases</span>
-                                </div>
-                                <div class="horario-mini-list">
-                                    ${clasesHtml}
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-        });
-
-        document.getElementById('info-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            let usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {};
-            const correoAnterior = usuarioActivo.correo;
-
-            usuarioActivo.nombre = document.getElementById('input-name').value;
-            usuarioActivo.correo = document.getElementById('input-email').value;
-            usuarioActivo.codigo = document.getElementById('input-codigo').value;
-            usuarioActivo.carrera = document.getElementById('input-carrera').value;
-            usuarioActivo.semestre = document.getElementById('input-semestre').value;
-
-            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-
-            let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
-            usuarios = usuarios.map(u => (u.correo === correoAnterior || u.correo === usuarioActivo.correo) ? usuarioActivo : u);
-            localStorage.setItem('usuariosList', JSON.stringify(usuarios));
-
-            alert('¡Información actualizada correctamente!');
-            location.reload();
-        });
-
-        document.getElementById('password-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const newPass = document.getElementById('new-password').value;
-            const confirmPass = document.getElementById('confirm-password').value;
-
-            if (newPass !== confirmPass) {
-                alert('La nueva contraseña y su confirmación no coinciden.');
-                return;
-            }
-
-            let usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo')) || {};
-            usuarioActivo.password = newPass;
-
-            localStorage.setItem('usuarioActivo', JSON.stringify(usuarioActivo));
-
-            let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
-            usuarios = usuarios.map(u => u.correo === usuarioActivo.correo ? usuarioActivo : u);
-            localStorage.setItem('usuariosList', JSON.stringify(usuarios));
-
-            alert('¡Contraseña actualizada con éxito!');
-            location.reload();
-        });
-
         function togglePasswordVisibility(inputId, button) {
             const field = document.getElementById(inputId);
             if (field.type === 'password') {
@@ -277,27 +175,119 @@
             document.getElementById(tabId).classList.add('active');
             evt.currentTarget.classList.add('active');
         }
+    </script>
 
-        function abrirModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.add('active');
-                modal.setAttribute('aria-hidden', 'false');
+    <!-- PERSISTENCIA (Firebase Auth + Firestore: usuarios/{uid} y usuarios/{uid}/horarios) -->
+    <script type="module">
+        import { usuarioListo } from './js/sesion.js';
+        import { obtenerPerfil, guardarPerfil, listarHorarios } from './js/db.js';
+        import { cambiarPassword } from './js/auth.js';
+        import { escapeHtml, esErrorDeCredenciales, mensajeError } from './js/utils.js';
+
+        const usuario = await usuarioListo;
+
+        // ---- Perfil
+        let perfil = {};
+        try {
+            perfil = (await obtenerPerfil(usuario.uid)) || {};
+        } catch (error) {
+            alert(mensajeError(error));
+        }
+
+        document.getElementById('profile-name-title').textContent = perfil.nombre || usuario.email;
+        document.getElementById('profile-semestre-title').textContent = perfil.semestre || '';
+
+        document.getElementById('input-name').value = perfil.nombre || '';
+        document.getElementById('input-email').value = usuario.email || '';
+        document.getElementById('input-carrera').value = perfil.carrera || '';
+        document.getElementById('input-codigo').value = perfil.codigo || '';
+        document.getElementById('input-semestre').value = perfil.semestre || '';
+
+        // ---- Horarios guardados
+        const misHorariosContainer = document.getElementById('listaMisHorarios');
+        let horariosGuardados = [];
+        try {
+            horariosGuardados = await listarHorarios(usuario.uid);
+        } catch (error) {
+            alert(mensajeError(error));
+        }
+
+        if (horariosGuardados.length === 0) {
+            misHorariosContainer.innerHTML = `
+                <p style="color: #777783; font-size: 13px; text-align: center; grid-column: span 2;">
+                    Aún no has guardado ningún horario. Ve a "Crear o editar horario" para armar y guardar uno.
+                </p>`;
+        } else {
+            misHorariosContainer.innerHTML = '';
+            horariosGuardados.forEach(h => {
+                const clases = h.clases || [];
+                let clasesHtml = clases.map(c => `
+                    <div class="horario-mini-clase" style="border-left: 3px solid ${escapeHtml(c.color || '#00ffff')}">
+                        <strong>${escapeHtml(c.nombre)}</strong>
+                        <span>${escapeHtml(c.dia)} (${escapeHtml(c.inicio)} - ${escapeHtml(c.fin)})</span>
+                        <small>${escapeHtml(c.sede)}</small>
+                    </div>
+                `).join('');
+
+                misHorariosContainer.innerHTML += `
+                    <div class="horario-card-item">
+                        <div class="horario-card-title">
+                            <h4>📚 ${escapeHtml(h.nombre)}</h4>
+                            <span class="badge-clases-count">${clases.length} clases</span>
+                        </div>
+                        <div class="horario-mini-list">
+                            ${clasesHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ---- Guardar información personal
+        document.getElementById('info-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            try {
+                await guardarPerfil(usuario.uid, {
+                    nombre: document.getElementById('input-name').value.trim(),
+                    correo: usuario.email,
+                    codigo: document.getElementById('input-codigo').value.trim(),
+                    carrera: document.getElementById('input-carrera').value.trim(),
+                    semestre: document.getElementById('input-semestre').value.trim()
+                });
+
+                alert('¡Información actualizada correctamente!');
+                location.reload();
+            } catch (error) {
+                alert(mensajeError(error));
             }
-        }
+        });
 
-        function cerrarModalLogout() {
-            const modal = document.getElementById('logout-modal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.setAttribute('aria-hidden', 'true');
+        // ---- Cambiar contraseña (Firebase pide confirmar la actual)
+        document.getElementById('password-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const actual = document.getElementById('info-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            if (newPass !== confirmPass) {
+                alert('La nueva contraseña y su confirmación no coinciden.');
+                return;
             }
-        }
 
-        function confirmarCierreSesion() {
-            localStorage.removeItem('usuarioActivo');
-            window.location.href = 'index.html';
-        }
+            try {
+                await cambiarPassword(actual, newPass);
+                alert('¡Contraseña actualizada con éxito!');
+                e.target.reset();
+            } catch (error) {
+                if (esErrorDeCredenciales(error)) {
+                    alert('La contraseña actual no es correcta.');
+                } else {
+                    alert(mensajeError(error));
+                }
+            }
+        });
     </script>
 
     <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->

@@ -114,12 +114,18 @@
   </div>
   <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
 
-  <script>
-    document.getElementById('register-form').addEventListener('submit', function (event) {
+  <script type="module">
+    import { registrarCuenta, eliminarCuentaActual } from './js/auth.js';
+    import { crearPerfil } from './js/db.js';
+    import { mensajeError } from './js/utils.js';
+
+    const form = document.getElementById('register-form');
+
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
       const nombre = document.getElementById('register-name').value.trim();
-      const correo = document.getElementById('register-email').value.trim();
+      const correo = document.getElementById('register-email').value.trim().toLowerCase();
       const password = document.getElementById('register-password').value;
       const carrera = document.getElementById('register-carrera').value.trim();
       const codigo = document.getElementById('register-codigo').value.trim();
@@ -130,21 +136,33 @@
         return;
       }
 
-      const nuevoUsuario = { nombre, correo, password, carrera, codigo, semestre };
-      let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
-
-      const existe = usuarios.some(u => u.correo === correo);
-      if (existe) {
-        alert('Este correo institucional ya está registrado.');
+      if (password.length < 8) {
+        alert('La contraseña debe tener mínimo 8 caracteres.');
         return;
       }
 
-      usuarios.push(nuevoUsuario);
-      localStorage.setItem('usuariosList', JSON.stringify(usuarios));
-      localStorage.setItem('usuarioActivo', JSON.stringify(nuevoUsuario));
+      const boton = form.querySelector('button[type="submit"]');
+      boton.disabled = true;
 
-      alert('¡Registro exitoso!');
-      window.location.href = 'dashboard.html';
+      let cuentaCreada = false;
+      try {
+        // 1) Crea la cuenta en Firebase Authentication (la contraseña la guarda Firebase)
+        const credencial = await registrarCuenta(correo, password);
+        cuentaCreada = true;
+
+        // 2) Guarda el perfil en Firestore: usuarios/{uid}
+        await crearPerfil(credencial.user.uid, { nombre, correo, carrera, codigo, semestre });
+
+        alert('¡Registro exitoso!');
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        // Si la cuenta se creó pero el perfil no, se deshace para poder reintentar.
+        if (cuentaCreada) {
+          try { await eliminarCuentaActual(); } catch (_) { /* ya se mostrará el error original */ }
+        }
+        alert(mensajeError(error));
+        boton.disabled = false;
+      }
     });
   </script>
   <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
