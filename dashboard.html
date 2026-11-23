@@ -6,21 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#090910">
   <meta name="description" content="Panel de Horarios SOS para organizar tu semestre académico.">
-  <title>Inicio · Horarios SOS</title>
+  <title>Panel Principal · Horarios SOS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/HORARIOS-SOS/css/dashboard.css">
-  <script src="dashboard.js" defer></script>
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 
 <body>
   <div class="dashboard-shell">
     <header class="navbar">
       <a class="brand" href="dashboard.html" aria-label="Horarios SOS, inicio">
-        <img class="brand-symbol" src="logo-sos.png" alt="Logo SOS">
+        <img class="brand-symbol" src="assets/logo-sos.png" alt="Logo SOS">
         <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
       </a>
 
@@ -39,8 +38,8 @@
         </a>
       </nav>
 
-      <a class="logout" href="javascript:void(0)" onclick="abrirModalLogout()"> <svg viewBox="0 0 24 24"
-          aria-hidden="true">
+      <a class="logout" href="javascript:void(0)" onclick="abrirModalLogout()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M10 5H5.5A1.5 1.5 0 0 0 4 6.5v11A1.5 1.5 0 0 0 5.5 19H10"></path>
           <path d="M13 8l4 4-4 4M17 12H8"></path>
         </svg>
@@ -61,7 +60,7 @@
     <main class="content" id="modulos">
       <section class="cards" aria-label="Opciones principales">
         <!-- Módulo Mi Perfil -->
-        <a href="Perfil.html" class="card cyan-card" style="text-decoration: none; color: inherit; display: block;">
+        <a href="perfil.html" class="card cyan-card" style="text-decoration: none; color: inherit; display: block;">
           <span class="card-title">CUENTA</span>
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -75,7 +74,7 @@
         </a>
 
         <!-- Módulo Información Adicional -->
-        <a href="PAG1.html" class="card yellow-card" style="text-decoration: none; color: inherit; display: block;">
+        <a href="pag1.html" class="card yellow-card" style="text-decoration: none; color: inherit; display: block;">
           <span class="card-title">RECURSOS</span>
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -91,7 +90,7 @@
         </a>
 
         <!-- Módulo Clases -->
-        <a href="PAG2.html" class="card green-card" style="text-decoration: none; color: inherit; display: block;">
+        <a href="pag2.html" class="card green-card" style="text-decoration: none; color: inherit; display: block;">
           <span class="card-title">MATERIAS</span>
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -107,7 +106,7 @@
         </a>
 
         <!-- Módulo Nuevo Horario -->
-        <a href="MisHorarios.html" class="card purple-card"
+        <a href="mis-horarios.html" class="card purple-card"
           style="text-decoration: none; color: inherit; display: block;">
           <span class="card-title">PLANIFICACIÓN</span>
           <div class="card-icon" aria-hidden="true">
@@ -126,6 +125,7 @@
     </main>
   </div>
   <div class="toast" id="dashboard-toast" role="status" aria-live="polite"></div>
+
   <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
   <div id="logout-modal" class="logout-modal-overlay" aria-hidden="true">
     <div class="logout-modal-box">
@@ -148,28 +148,98 @@
       </div>
     </div>
   </div>
+
   <script>
-      function abrirModalLogout() {
-          const modal = document.getElementById('logout-modal');
-          if (modal) {
-              modal.classList.add('active');
-              modal.setAttribute('aria-hidden', 'false');
-          }
+    function abrirModalLogout() {
+      const modal = document.getElementById('logout-modal');
+      if (modal) {
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
       }
+    }
 
-      function cerrarModalLogout() {
-          const modal = document.getElementById('logout-modal');
-          if (modal) {
-              modal.classList.remove('active');
-              modal.setAttribute('aria-hidden', 'true');
-          }
+    function cerrarModalLogout() {
+      const modal = document.getElementById('logout-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
       }
+    }
 
-      function confirmarCierreSesion() {
-          localStorage.removeItem('usuarioActivo');
-          window.location.href = 'index.html';
-      }
+    function confirmarCierreSesion() {
+      localStorage.removeItem('usuarioActivo');
+      window.location.href = 'index.html';
+    }
   </script>
+  <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
+    <button type="button" onclick="toggleAccessibility()" aria-expanded="false" id="acc-toggle-btn"
+        style="width: 100%; background: #202030; color: #00ffff; border: 1px solid #00ffff; padding: 8px 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 8px;">
+        ⚙️ Accesibilidad
+    </button>
+
+    <div id="acc-panel" style="display: none; margin-top: 12px; flex-direction: column; gap: 10px; font-size: 11px; color: #ccc;">
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tamaño de texto:
+            <input type="range" id="fontSizeRange" min="11" max="20" value="14" oninput="changeFontSize(this.value)" style="cursor: pointer;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Fondo (Página):
+            <input type="color" id="bgColorPicker" value="#090910" oninput="changeBgColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Tarjetas:
+            <input type="color" id="cardColorPicker" value="#171727" oninput="changeCardsColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tipografía:
+            <select id="fontSelect" onchange="changeFontFamily(this.value)" style="background:#202030; color:white; border:1px solid #444; padding: 4px; border-radius: 4px;">
+                <option value="Manrope, Arial, sans-serif">Predeterminada</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace">Courier / Retro</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<script>
+    function toggleAccessibility() {
+        const panel = document.getElementById('acc-panel');
+        const btn = document.getElementById('acc-toggle-btn');
+        const isOpen = panel.style.display === 'flex';
+        panel.style.display = isOpen ? 'none' : 'flex';
+        btn.setAttribute('aria-expanded', String(!isOpen));
+    }
+
+    function changeFontSize(size) {
+        document.querySelectorAll('p, h1, h2, h3, h4, label, span, a, button, input, select').forEach(el => {
+            if (!el.closest('#accessibility-menu')) {
+                el.style.fontSize = size + 'px';
+            }
+        });
+    }
+
+    function changeBgColor(color) {
+        document.body.style.backgroundColor = color;
+        document.querySelectorAll('.page-shell, .form-panel, .dashboard-shell, .main-layout, .main-container').forEach(el => {
+            el.style.backgroundColor = color;
+        });
+    }
+
+    function changeCardsColor(color) {
+        document.querySelectorAll('.card, .card-feature, .card-func, .panel-box, .profile-card, .tabs-container, .form-card, .class-card-item, .empty-state').forEach(card => {
+            card.style.backgroundColor = color;
+        });
+    }
+
+    function changeFontFamily(font) {
+        document.body.style.fontFamily = font;
+    }
+</script>
 </body>
 
 </html>

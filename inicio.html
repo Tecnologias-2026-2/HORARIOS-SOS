@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090910">
+  <meta name="description" content="Horarios SOS: organiza tu semana académica sin esfuerzo.">
+  <title>Iniciar sesión · Horarios SOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <div class="page-shell">
+    <main class="auth-layout">
+      <section class="showcase" aria-label="Presentación de Horarios SOS">
+        <a class="brand" href="index.html" aria-label="Horarios SOS, inicio">
+          <img class="brand-symbol" src="assets/logo-sos.png" alt="Logo Horarios SOS">
+          <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
+        </a>
+
+        <div class="showcase-copy">
+          <p class="eyebrow">SISTEMA ORGANIZADOR DE SEMESTRES</p>
+          <h1>Organiza tu semana <span>académica</span><br class="desktop-break"> sin esfuerzo.</h1>
+          <p class="intro">Visualiza horarios, gestiona materias y nunca<br class="desktop-break"> pierdas una clase.
+          </p>
+        </div>
+
+        <div class="week-preview" aria-label="Vista previa de un horario semanal">
+          <div class="week-days"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span></div>
+          <div class="week-grid" aria-hidden="true">
+            <span class="class-block blue b1"></span>
+            <span class="class-block green b2"></span>
+            <span class="class-block yellow b3"></span>
+            <span class="class-block blue b4"></span>
+            <span class="class-block green b5"></span>
+            <span class="class-block yellow b6"></span>
+            <span class="class-block blue b7"></span>
+            <span class="class-block blue b8"></span>
+            <span class="class-block yellow b9"></span>
+            <span class="class-block green b10"></span>
+            <span class="class-block blue b11"></span>
+          </div>
+        </div>
+
+        <div class="subjects-heading">ESTE SEMESTRE</div>
+        <div class="subject-list" aria-label="Materias de ejemplo">
+          <article class="subject-item subject-cyan"><span class="subject-mark"></span>
+            <div><strong>Cálculo II</strong><small>7:00–9:00 · Aula 301</small></div>
+          </article>
+          <article class="subject-item subject-green"><span class="subject-mark"></span>
+            <div><strong>Programación I</strong><small>9:00–11:00 · Lab Cómputo</small></div>
+          </article>
+          <article class="subject-item subject-yellow"><span class="subject-mark"></span>
+            <div><strong>Física General</strong><small>11:00–13:00 · Aula 108</small></div>
+          </article>
+        </div>
+        <div class="showcase-glow" aria-hidden="true"></div>
+      </section>
+
+      <section class="form-panel" aria-labelledby="form-title">
+        <div class="mobile-brand brand" aria-hidden="true">
+          <img class="brand-symbol" src="assets/logo-sos.png" alt="">
+          <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
+        </div>
+        <div class="form-content login-content">
+          <div class="form-heading">
+            <h2 id="form-title">Bienvenido de nuevo</h2>
+            <p>Inicia sesión con tu correo institucional</p>
+          </div>
+
+          <form id="login-form" novalidate>
+            <div class="field">
+              <label for="login-email">CORREO INSTITUCIONAL</label>
+              <input id="login-email" name="email" type="email" placeholder="est.Oscar.OrtizE@unimilitar.edu.co"
+                autocomplete="username" required>
+            </div>
+            <div class="field">
+              <label for="login-password">CONTRASEÑA</label>
+              <input id="login-password" name="password" type="password" placeholder="••••••••••"
+                autocomplete="current-password" required minlength="6">
+            </div>
+            <button class="submit-button" type="submit">Continuar <span aria-hidden="true">→</span></button>
+            <p class="form-feedback" id="login-feedback" role="status" aria-live="polite"></p>
+          </form>
+
+          <!-- MODAL DE ERROR DE INICIO DE SESIÓN -->
+          <div id="error-modal" class="modal-overlay" aria-hidden="true">
+            <div class="modal-box">
+              <div class="modal-icon">⚠️</div>
+              <h3>Error de autenticación</h3>
+              <p>Usuario y/o contraseña incorrectas o inexistentes.</p>
+              <button type="button" id="close-modal-btn" onclick="cerrarModalError()">Entendido</button>
+            </div>
+          </div>
+          <p class="switch-copy">¿Eres nuevo? <a href="registro.html">Crea tu cuenta</a></p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const correoIngresado = document.getElementById('login-email').value.trim();
+      const passwordIngresado = document.getElementById('login-password').value;
+
+      const usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
+      const usuarioEncontrado = usuarios.find(u => u.correo === correoIngresado && u.password === passwordIngresado);
+
+      if (usuarioEncontrado) {
+        localStorage.setItem('usuarioActivo', JSON.stringify(usuarioEncontrado));
+        window.location.href = 'dashboard.html';
+      } else {
+        mostrarModalError();
+      }
+    });
+
+    function mostrarModalError() {
+      const modal = document.getElementById('error-modal');
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function cerrarModalError() {
+      const modal = document.getElementById('error-modal');
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    
+  </script>
+  <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
+    <button type="button" onclick="toggleAccessibility()" aria-expanded="false" id="acc-toggle-btn"
+        style="width: 100%; background: #202030; color: #00ffff; border: 1px solid #00ffff; padding: 8px 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 8px;">
+        ⚙️ Accesibilidad
+    </button>
+
+    <div id="acc-panel" style="display: none; margin-top: 12px; flex-direction: column; gap: 10px; font-size: 11px; color: #ccc;">
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tamaño de texto:
+            <input type="range" id="fontSizeRange" min="11" max="20" value="14" oninput="changeFontSize(this.value)" style="cursor: pointer;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Fondo (Página):
+            <input type="color" id="bgColorPicker" value="#090910" oninput="changeBgColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Tarjetas:
+            <input type="color" id="cardColorPicker" value="#171727" oninput="changeCardsColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tipografía:
+            <select id="fontSelect" onchange="changeFontFamily(this.value)" style="background:#202030; color:white; border:1px solid #444; padding: 4px; border-radius: 4px;">
+                <option value="Manrope, Arial, sans-serif">Predeterminada</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace">Courier / Retro</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<script>
+    function toggleAccessibility() {
+        const panel = document.getElementById('acc-panel');
+        const btn = document.getElementById('acc-toggle-btn');
+        const isOpen = panel.style.display === 'flex';
+        panel.style.display = isOpen ? 'none' : 'flex';
+        btn.setAttribute('aria-expanded', String(!isOpen));
+    }
+
+    function changeFontSize(size) {
+        document.querySelectorAll('p, h1, h2, h3, h4, label, span, a, button, input, select').forEach(el => {
+            if (!el.closest('#accessibility-menu')) {
+                el.style.fontSize = size + 'px';
+            }
+        });
+    }
+
+    function changeBgColor(color) {
+        document.body.style.backgroundColor = color;
+        document.querySelectorAll('.page-shell, .form-panel, .dashboard-shell, .main-layout, .main-container').forEach(el => {
+            el.style.backgroundColor = color;
+        });
+    }
+
+    function changeCardsColor(color) {
+        document.querySelectorAll('.card, .card-feature, .card-func, .panel-box, .profile-card, .tabs-container, .form-card, .class-card-item, .empty-state').forEach(card => {
+            card.style.backgroundColor = color;
+        });
+    }
+
+    function changeFontFamily(font) {
+        document.body.style.fontFamily = font;
+    }
+</script>
+
+</body>
+
+</html>

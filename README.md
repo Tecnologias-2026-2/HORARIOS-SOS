@@ -47,8 +47,8 @@ https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117
 
 🧩 7. Documentación del Sistema
 El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas y los recursos gráficos:
-/css: Contiene las hojas de estilo dedicadas con un diseño neo-neon dark-themed (estiloperfil.css, estilomishorarios.css, estilo2.css, estilo.css, dashboard.css).
-/assets: Almacena los recursos gráficos e imágenes institucionales y de marca de la aplicación (como logo-sos.png).
+/css: Contiene las hojas de estilo dedicadas con un diseño dark-themed y detalles neón (styles.css, dashboard.css, estilo.css, estilomishorarios.css, estiloperfil.css).
+/assets: Almacena los recursos gráficos e imágenes de marca de la aplicación (como logo-sos.png).
 
 
 🚀 8. Instalación y Ejecución

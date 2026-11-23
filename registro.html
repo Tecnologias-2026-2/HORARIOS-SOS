@@ -12,8 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/HORARIOS-SOS/css/styles.css">
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -21,7 +20,7 @@
     <main class="auth-layout">
       <section class="showcase" aria-label="Presentación de Horarios SOS">
         <a class="brand" href="index.html" aria-label="Horarios SOS, inicio">
-          <img class="brand-symbol" src="logo-sos.png" alt="" aria-hidden="true">
+          <img class="brand-symbol" src="assets/logo-sos.png" alt="Logo Horarios SOS">
           <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
         </a>
 
@@ -66,7 +65,7 @@
 
       <section class="form-panel" aria-labelledby="form-title">
         <div class="mobile-brand brand" aria-hidden="true">
-          <img class="brand-symbol" src="logo-sos.png" alt="" aria-hidden="true">
+          <img class="brand-symbol" src="assets/logo-sos.png" alt="">
           <span class="brand-wordmark"><strong>HORARIOS</strong><small>SOS</small></span>
         </div>
         <div class="form-content register-content">
@@ -91,7 +90,6 @@
               <input id="register-password" name="password" type="password" placeholder="Mínimo 8 caracteres"
                 autocomplete="new-password" required minlength="8">
             </div>
-            <!-- Nuevos campos añadidos -->
             <div class="field">
               <label for="register-carrera">CARRERA</label>
               <input id="register-carrera" name="carrera" type="text" placeholder="Ej. Ingeniería Civil" required>
@@ -109,48 +107,115 @@
             <p class="form-feedback" id="register-feedback" role="status" aria-live="polite"></p>
           </form>
 
-          <script>
-            document.getElementById('register-form').addEventListener('submit', function (event) {
-              event.preventDefault();
-
-              const nombre = document.getElementById('register-name').value;
-              const correo = document.getElementById('register-email').value;
-              const password = document.getElementById('register-password').value;
-              const carrera = document.getElementById('register-carrera').value;
-              const codigo = document.getElementById('register-codigo').value;
-              const semestre = document.getElementById('register-semestre').value;
-
-              // Crear objeto del nuevo usuario
-              const nuevoUsuario = { nombre, correo, password, carrera, codigo, semestre };
-
-              // Obtener la lista actual de usuarios guardados o inicializar un arreglo vacío
-              let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
-
-              // Verificar si el correo ya está registrado
-              const existe = usuarios.some(u => u.correo === correo);
-              if (existe) {
-                alert('Este correo institucional ya está registrado.');
-                return;
-              }
-
-              // Agregar el nuevo usuario a la lista y guardar
-              usuarios.push(nuevoUsuario);
-              localStorage.setItem('usuariosList', JSON.stringify(usuarios));
-
-              // También guardamos el usuario actual en sesión activa
-              localStorage.setItem('usuarioActivo', JSON.stringify(nuevoUsuario));
-
-              alert('¡Registro exitoso!');
-              window.location.href = 'dashboard.html';
-            });
-          </script>
-
-          <p class="switch-copy">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
+          <p class="switch-copy">¿Ya tienes cuenta? <a href="inicio.html">Inicia sesión</a></p>
         </div>
       </section>
     </main>
   </div>
   <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const nombre = document.getElementById('register-name').value.trim();
+      const correo = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const carrera = document.getElementById('register-carrera').value.trim();
+      const codigo = document.getElementById('register-codigo').value.trim();
+      const semestre = document.getElementById('register-semestre').value.trim();
+
+      if (!nombre || !correo || !password || !carrera || !codigo || !semestre) {
+        alert('Por favor completa todos los campos.');
+        return;
+      }
+
+      const nuevoUsuario = { nombre, correo, password, carrera, codigo, semestre };
+      let usuarios = JSON.parse(localStorage.getItem('usuariosList')) || [];
+
+      const existe = usuarios.some(u => u.correo === correo);
+      if (existe) {
+        alert('Este correo institucional ya está registrado.');
+        return;
+      }
+
+      usuarios.push(nuevoUsuario);
+      localStorage.setItem('usuariosList', JSON.stringify(usuarios));
+      localStorage.setItem('usuarioActivo', JSON.stringify(nuevoUsuario));
+
+      alert('¡Registro exitoso!');
+      window.location.href = 'dashboard.html';
+    });
+  </script>
+  <div id="accessibility-menu" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #171722; border: 1px solid #32324a; padding: 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); width: 240px;">
+    <button type="button" onclick="toggleAccessibility()" aria-expanded="false" id="acc-toggle-btn"
+        style="width: 100%; background: #202030; color: #00ffff; border: 1px solid #00ffff; padding: 8px 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 8px;">
+        ⚙️ Accesibilidad
+    </button>
+
+    <div id="acc-panel" style="display: none; margin-top: 12px; flex-direction: column; gap: 10px; font-size: 11px; color: #ccc;">
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tamaño de texto:
+            <input type="range" id="fontSizeRange" min="11" max="20" value="14" oninput="changeFontSize(this.value)" style="cursor: pointer;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Fondo (Página):
+            <input type="color" id="bgColorPicker" value="#090910" oninput="changeBgColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; justify-content: space-between; align-items: center;">
+            Color de Tarjetas:
+            <input type="color" id="cardColorPicker" value="#171727" oninput="changeCardsColor(this.value)" style="background: none; border: none; cursor: pointer; width: 30px; height: 25px;">
+        </label>
+
+        <label style="display: flex; flex-direction: column; gap: 4px;">
+            Tipografía:
+            <select id="fontSelect" onchange="changeFontFamily(this.value)" style="background:#202030; color:white; border:1px solid #444; padding: 4px; border-radius: 4px;">
+                <option value="Manrope, Arial, sans-serif">Predeterminada</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace">Courier / Retro</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<script>
+    function toggleAccessibility() {
+        const panel = document.getElementById('acc-panel');
+        const btn = document.getElementById('acc-toggle-btn');
+        const isOpen = panel.style.display === 'flex';
+        panel.style.display = isOpen ? 'none' : 'flex';
+        btn.setAttribute('aria-expanded', String(!isOpen));
+    }
+
+    function changeFontSize(size) {
+        document.querySelectorAll('p, h1, h2, h3, h4, label, span, a, button, input, select').forEach(el => {
+            if (!el.closest('#accessibility-menu')) {
+                el.style.fontSize = size + 'px';
+            }
+        });
+    }
+
+    function changeBgColor(color) {
+        document.body.style.backgroundColor = color;
+        document.querySelectorAll('.page-shell, .form-panel, .dashboard-shell, .main-layout, .main-container').forEach(el => {
+            el.style.backgroundColor = color;
+        });
+    }
+
+    function changeCardsColor(color) {
+        document.querySelectorAll('.card, .card-feature, .card-func, .panel-box, .profile-card, .tabs-container, .form-card, .class-card-item, .empty-state').forEach(card => {
+            card.style.backgroundColor = color;
+        });
+    }
+
+    function changeFontFamily(font) {
+        document.body.style.fontFamily = font;
+    }
+</script>
 </body>
 
 </html>
