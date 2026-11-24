@@ -40,7 +40,7 @@ El proceso inicia cuando el estudiante inicia sesión y comienza a crear un nuev
 https://www.figma.com/design/gaApeAscHBf9GRidXQ4lxr/WEB-HORARIOS-SOS?node-id=117-281&t=DMZvwGp7xpiRKpT4-1
 
 🗄️ 6. Diseño de Base de Datos
-La aplicación usa Firebase: Authentication (correo y contraseña) para las cuentas y Cloud Firestore para los datos. Todo cuelga del uid del usuario, de modo que cada estudiante solo accede a su propia información (ver firestore.rules).
+La aplicación usa Firebase a través del backend (/backend): Authentication (correo y contraseña) para las cuentas y Cloud Firestore para los datos. Todo cuelga del uid del usuario, de modo que cada estudiante solo accede a su propia información (ver firestore.rules).
 -> Firebase Authentication: gestiona el registro, el inicio de sesión y la sesión activa. La contraseña la guarda Firebase y nunca se almacena en Firestore. Reemplaza a usuariosList y usuarioActivo.
 -> usuarios/{uid}: perfil del estudiante (nombre, correo, carrera, codigo, semestre, creadoEn, actualizadoEn).
 -> usuarios/{uid}/clases/{claseId}: materias agregadas por el usuario (nombre, sede, dia, inicio, fin, color, creadoEn). Reemplaza a clases_[correo].
@@ -50,8 +50,8 @@ La aplicación usa Firebase: Authentication (correo y contraseña) para las cuen
 El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas, la lógica de Firebase y los recursos gráficos:
 /css: Contiene las hojas de estilo dedicadas con un diseño dark-themed y detalles neón (styles.css, dashboard.css, estilo.css, estilomishorarios.css, estiloperfil.css).
 /assets: Almacena los recursos gráficos e imágenes de marca de la aplicación (como logo-sos.png).
-/js: Lógica de Firebase compartida por las páginas: auth.js (registro, inicio y cierre de sesión, cambio de contraseña), db.js (lectura y escritura en Firestore), sesion.js (protege las páginas privadas y conecta el cierre de sesión) y utils.js (utilidades y mensajes de error).
-firebaseconfig.js: Inicializa Firebase (app, auth y db) y lo importan los módulos de /js.
+/js: Lógica del frontend compartida por las páginas: api.js (cliente HTTP de la API), config.js (URL del backend), auth.js (registro, inicio y cierre de sesión, cambio de contraseña), db.js (clases, horarios y perfil vía API), sesion.js (protege las páginas privadas y conecta el cierre de sesión) y utils.js (utilidades y mensajes de error).
+/backend: API en Node.js + Express que se conecta a Firebase (Authentication + Firestore) con Firebase Admin. Ver backend/README.md.
 firestore.rules: Reglas de seguridad de Firestore que se publican en Firebase Console.
 
 🚀 8. Instalación y Ejecución
@@ -63,7 +63,11 @@ Configuración de Firebase (una sola vez, en https://console.firebase.google.com
 -> Firestore Database → Reglas: pegar el contenido de firestore.rules y pulsar "Publicar".
 -> Authentication → Settings → Authorized domains: localhost viene autorizado; si se publica el sitio (por ejemplo en GitHub Pages) hay que agregar ese dominio.
 
-Ejecución: como el código usa módulos de JavaScript y Firebase Authentication, ya NO se puede abrir index.html con doble clic (file://). Hay que servir la carpeta con un servidor local, por ejemplo:
+Backend (una sola vez): entra a /backend, copia .env.example a .env, completa JWT_SECRET y FIREBASE_SERVICE_ACCOUNT (Firebase Console → Configuración del proyecto → Cuentas de servicio → Generar nueva clave privada), ejecuta "npm install" y "npm start" (http://localhost:3000).
+
+Ejecución: como el código usa módulos de JavaScript, NO se puede abrir index.html con doble clic (file://). Hay que servir la carpeta con un servidor local, por ejemplo:
 -> Con Python: ejecutar "python -m http.server 5500" dentro de la carpeta y abrir http://localhost:5500
 -> Con VS Code: instalar la extensión Live Server y pulsar "Go Live" sobre index.html.
 Luego regístrate con un correo institucional, inicia sesión y explora todas las funcionalidades de gestión, validación y creación de horarios académicos.
+
+Despliegue: el frontend se publica en GitHub Pages; el backend debe desplegarse aparte (por ejemplo en Render, ver backend/README.md) y su URL se configura en js/config.js. La sesión se guarda en una cookie que expira a los 30 días.
