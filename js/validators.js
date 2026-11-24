@@ -18,6 +18,33 @@ export const correoInstitucionalValido = (correo) =>
   typeof correo === "string" && correo.trim().toLowerCase().endsWith(DOMINIO_CORREO) &&
   /^[^@\s]+@unimilitar\.edu\.co$/i.test(correo.trim());
 
+export const PASSWORD_MIN = 8; // el backend exigía mínimo 8 (Firebase por defecto solo exige 6)
+export const passwordValida = (p) => typeof p === "string" && p.length >= PASSWORD_MIN;
+
+const textoObligatorio = (v, max) => {
+  const t = String(v ?? "").trim();
+  return t.length > 0 && t.length <= max;
+};
+
+// Devuelve { error } o { perfil } con los campos limpios (igual que POST/PUT /usuarios del backend).
+export function validarPerfil(d) {
+  if (!d || typeof d !== "object") return { error: "El perfil es inválido." };
+  if (!textoObligatorio(d.nombre, 120)) return { error: "El nombre es obligatorio (máximo 120 caracteres)." };
+  if (!correoInstitucionalValido(d.correo)) return { error: `El correo debe terminar en ${DOMINIO_CORREO}.` };
+  if (!textoObligatorio(d.carrera, 120)) return { error: "La carrera es obligatoria (máximo 120 caracteres)." };
+  if (!textoObligatorio(d.codigo, 40)) return { error: "El código es obligatorio (máximo 40 caracteres)." };
+  if (!textoObligatorio(d.semestre, 60)) return { error: "El semestre es obligatorio (máximo 60 caracteres)." };
+  return {
+    perfil: {
+      nombre: String(d.nombre).trim(),
+      correo: String(d.correo).trim().toLowerCase(),
+      carrera: String(d.carrera).trim(),
+      codigo: String(d.codigo).trim(),
+      semestre: String(d.semestre).trim()
+    }
+  };
+}
+
 const HORA_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const horaValida = (h) => typeof h === "string" && HORA_RE.test(h) && h >= "07:00" && h <= "23:00";
 

@@ -28,7 +28,10 @@ import {
   deleteDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
-import { validarClase, haySolape, exigirSinCruces, errorValidacion } from "./validators.js";
+import {
+  validarClase, haySolape, exigirSinCruces, errorValidacion,
+  validarPerfil
+} from "./validators.js";
 
 const perfilRef = (uid) => doc(db, "usuarios", uid);
 const clasesCol = (uid) => collection(db, "usuarios", uid, "clases");
@@ -47,9 +50,12 @@ function soloCamposDeClase({ nombre, sede, dia, inicio, fin, color }) {
 }
 
 // ---------------------------------------------------------------- PERFIL
-export async function crearPerfil(uid, { nombre, correo, carrera, codigo, semestre }) {
+export async function crearPerfil(uid, datos) {
+  // Mismas validaciones del backend: campos obligatorios y correo institucional.
+  const { error, perfil } = validarPerfil(datos);
+  if (error) throw errorValidacion(error);
   await setDoc(perfilRef(uid), {
-    nombre, correo, carrera, codigo, semestre,
+    ...perfil,
     creadoEn: serverTimestamp()
   });
 }
@@ -60,9 +66,11 @@ export async function obtenerPerfil(uid) {
 }
 
 // merge:true => funciona aunque el perfil no exista todavía y no pisa creadoEn.
-export async function guardarPerfil(uid, { nombre, correo, carrera, codigo, semestre }) {
+export async function guardarPerfil(uid, datos) {
+  const { error, perfil } = validarPerfil(datos);
+  if (error) throw errorValidacion(error);
   await setDoc(perfilRef(uid), {
-    nombre, correo, carrera, codigo, semestre,
+    ...perfil,
     actualizadoEn: serverTimestamp()
   }, { merge: true });
 }

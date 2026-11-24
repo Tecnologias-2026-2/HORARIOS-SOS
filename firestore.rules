@@ -23,6 +23,8 @@ service cloud.firestore {
         && d.keys().hasOnly(['nombre', 'correo', 'carrera', 'codigo', 'semestre', 'creadoEn', 'actualizadoEn'])
         && textoValido(d.nombre, 120)
         && textoValido(d.correo, 254)
+        && d.correo.matches('^[^@ ]+@unimilitar[.]edu[.]co$')
+        && d.correo == request.auth.token.email
         && textoValido(d.carrera, 120)
         && textoValido(d.codigo, 40)
         && textoValido(d.semestre, 60);

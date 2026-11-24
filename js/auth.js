@@ -5,7 +5,7 @@
 // =====================================================================
 import { auth } from "../firebaseconfig.js";
 import { guardarCookie, leerCookie, borrarCookie, cookiesAceptadas, COOKIE_SESION } from "./cookies.js";
-import { errorValidacion } from "./validators.js";
+import { errorValidacion, passwordValida, PASSWORD_MIN } from "./validators.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -72,6 +72,9 @@ export function requerirSesion(destino = "inicio.html") {
 
 // Cambiar la contraseña exige confirmar la actual (re-autenticación).
 export async function cambiarPassword(passwordActual, passwordNueva) {
+  if (!passwordValida(passwordNueva)) {
+    throw errorValidacion(`La contraseña debe tener mínimo ${PASSWORD_MIN} caracteres.`);
+  }
   const user = auth.currentUser;
   const credencial = EmailAuthProvider.credential(user.email, passwordActual);
   await reauthenticateWithCredential(user, credencial);

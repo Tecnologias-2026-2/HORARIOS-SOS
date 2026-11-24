@@ -73,3 +73,13 @@ Luego regístrate con un correo institucional, inicia sesión y explora todas la
 -> El aviso de cookies (js/banner-cookies.js) aparece en todas las páginas hasta que el usuario decide. La cookie de sesión solo se guarda si acepta; si rechaza, las páginas públicas funcionan pero no se puede iniciar sesión ni registrarse. La decisión se recuerda 180 días en la cookie "sos_consentimiento".
 -> Antes de guardar una clase o un horario, el navegador valida sede, día, horas (07:00 a 23:00) y que no haya cruces con otras clases (js/validators.js). El registro exige correo @unimilitar.edu.co. firestore.rules repite en el servidor las validaciones de sede, día y horas.
 -> Para publicar en GitHub Pages: agregar tecnologias-2026-2.github.io en Firebase Console → Authentication → Settings → Authorized domains, y volver a publicar firestore.rules.
+
+🔁 10. Equivalencia con el backend del fork (Express + PostgreSQL)
+El fork tenía una API propia (Node + Express + PostgreSQL + JWT). En esta versión ya no hace falta servidor: Firebase cubre cada parte y las reglas del backend se pasaron a /js y a firestore.rules.
+-> POST /api/usuarios y POST /api/login -> Firebase Auth (js/auth.js) + perfil en Firestore (js/db.js, validarPerfil en js/validators.js). Correo @unimilitar.edu.co y contraseña de mínimo 8.
+-> PUT /api/usuarios/:correo -> guardarPerfil (el correo de la cuenta no se edita porque es el de Firebase Auth).
+-> PUT /api/usuarios/:correo/password -> cambiarPassword (re-autenticación + mínimo 8).
+-> /api/clases (GET, POST, DELETE) -> listarClases, agregarClase (valida sede, día, horas y cruces), eliminarClase.
+-> /api/horarios (GET, POST, DELETE) -> listarHorarios, guardarHorario (valida cada clase y cruces), eliminarHorario.
+-> JWT y "solo el dueño" -> uid de Firebase Auth + firestore.rules (usuarios/{uid}).
+Al cambiar firestore.rules hay que volver a publicarlas en Firebase Console.
