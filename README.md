@@ -50,7 +50,7 @@ La aplicación usa Firebase: Authentication (correo y contraseña) para las cuen
 El proyecto se encuentra organizado de manera modular para separar los estilos, las vistas, la lógica de Firebase y los recursos gráficos:
 /css: Contiene las hojas de estilo dedicadas con un diseño dark-themed y detalles neón (styles.css, dashboard.css, estilo.css, estilomishorarios.css, estiloperfil.css).
 /assets: Almacena los recursos gráficos e imágenes de marca de la aplicación (como logo-sos.png).
-/js: Lógica de Firebase compartida por las páginas: auth.js (registro, inicio y cierre de sesión, cambio de contraseña), db.js (lectura y escritura en Firestore), sesion.js (protege las páginas privadas y conecta el cierre de sesión), validators.js (validación de sedes, días, horas y cruces de horario), cookies.js (cookie de sesión de 30 días) y utils.js (utilidades y mensajes de error).
+/js: Lógica de Firebase compartida por las páginas: auth.js (registro, inicio y cierre de sesión, cambio de contraseña), db.js (lectura y escritura en Firestore), sesion.js (protege las páginas privadas y conecta el cierre de sesión), validators.js (validación de sedes, días, horas y cruces de horario), cookies.js (cookies y consentimiento), banner-cookies.js (aviso de cookies Aceptar/Rechazar) y utils.js (utilidades y mensajes de error).
 firebaseconfig.js: Inicializa Firebase (app, auth y db) y lo importan los módulos de /js.
 firestore.rules: Reglas de seguridad de Firestore que se publican en Firebase Console.
 
@@ -70,5 +70,6 @@ Luego regístrate con un correo institucional, inicia sesión y explora todas la
 
 🍪 9. Sesión de 30 días y validaciones
 -> Al registrarse o iniciar sesión se guarda la cookie "sos_sesion" con vigencia de 30 días. Firebase mantiene la sesión en el navegador y, cuando la cookie vence, las páginas privadas cierran la sesión y piden iniciar de nuevo (js/auth.js, js/cookies.js).
+-> El aviso de cookies (js/banner-cookies.js) aparece en todas las páginas hasta que el usuario decide. La cookie de sesión solo se guarda si acepta; si rechaza, las páginas públicas funcionan pero no se puede iniciar sesión ni registrarse. La decisión se recuerda 180 días en la cookie "sos_consentimiento".
 -> Antes de guardar una clase o un horario, el navegador valida sede, día, horas (07:00 a 23:00) y que no haya cruces con otras clases (js/validators.js). El registro exige correo @unimilitar.edu.co. firestore.rules repite en el servidor las validaciones de sede, día y horas.
 -> Para publicar en GitHub Pages: agregar tecnologias-2026-2.github.io en Firebase Console → Authentication → Settings → Authorized domains, y volver a publicar firestore.rules.

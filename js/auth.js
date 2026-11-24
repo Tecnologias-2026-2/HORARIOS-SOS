@@ -4,7 +4,8 @@
 // La contraseña la guarda Firebase (cifrada); nunca se guarda en Firestore.
 // =====================================================================
 import { auth } from "../firebaseconfig.js";
-import { guardarCookie, leerCookie, borrarCookie } from "./cookies.js";
+import { guardarCookie, leerCookie, borrarCookie, cookiesAceptadas, COOKIE_SESION } from "./cookies.js";
+import { errorValidacion } from "./validators.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -17,15 +18,24 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 // Cookie "sos_sesion": marca de sesión iniciada que vence a los 30 días.
-const COOKIE_SESION = "sos_sesion";
+// Solo se guarda si el usuario aceptó el aviso de cookies.
+function exigirCookies() {
+  if (!cookiesAceptadas()) {
+    throw errorValidacion(
+      "Para iniciar sesión debes aceptar la cookie de sesión. Pulsa «Aceptar» en el aviso de cookies."
+    );
+  }
+}
 
 export async function registrarCuenta(correo, password) {
+  exigirCookies();
   const credencial = await createUserWithEmailAndPassword(auth, correo, password);
   guardarCookie(COOKIE_SESION, "1"); // 30 días
   return credencial;
 }
 
 export async function iniciarSesion(correo, password) {
+  exigirCookies();
   const credencial = await signInWithEmailAndPassword(auth, correo, password);
   guardarCookie(COOKIE_SESION, "1"); // 30 días
   return credencial;
