@@ -115,8 +115,10 @@
   <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
 
   <script type="module">
-    import { registrarUsuario } from './js/auth.js';
+    import { registrarCuenta, eliminarCuentaActual } from './js/auth.js';
+    import { crearPerfil } from './js/db.js';
     import { mensajeError } from './js/utils.js';
+    import { correoInstitucionalValido, DOMINIO_CORREO } from './js/validators.js';
 
     const form = document.getElementById('register-form');
 
@@ -135,6 +137,11 @@
         return;
       }
 
+      if (!correoInstitucionalValido(correo)) {
+        alert('El correo debe terminar en ' + DOMINIO_CORREO + '.');
+        return;
+      }
+
       if (password.length < 8) {
         alert('La contraseña debe tener mínimo 8 caracteres.');
         return;
@@ -143,13 +150,22 @@
       const boton = form.querySelector('button[type="submit"]');
       boton.disabled = true;
 
+      let cuentaCreada = false;
       try {
-        // La API crea la cuenta (Firebase Authentication) y el perfil (Firestore) y abre la sesión
-        await registrarUsuario({ nombre, correo, password, carrera, codigo, semestre });
+        // 1) Crea la cuenta en Firebase Authentication (la contraseña la guarda Firebase)
+        const credencial = await registrarCuenta(correo, password);
+        cuentaCreada = true;
+
+        // 2) Guarda el perfil en Firestore: usuarios/{uid}
+        await crearPerfil(credencial.user.uid, { nombre, correo, carrera, codigo, semestre });
 
         alert('¡Registro exitoso!');
         window.location.href = 'dashboard.html';
       } catch (error) {
+        // Si la cuenta se creó pero el perfil no, se deshace para poder reintentar.
+        if (cuentaCreada) {
+          try { await eliminarCuentaActual(); } catch (_) { /* ya se mostrará el error original */ }
+        }
         alert(mensajeError(error));
         boton.disabled = false;
       }

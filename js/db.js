@@ -1,46 +1,141 @@
 // =====================================================================
-// Capa de datos: ahora habla con la API, que guarda todo en Cloud Firestore
+// Capa de datos con Cloud Firestore
 // ---------------------------------------------------------------------
-// Las funciones conservan los mismos nombres y parámetros de antes (el
-// parámetro "uid" se mantiene por compatibilidad, pero la API identifica
-// al usuario por su sesión, así que no se envía).
+// Estructura (todo cuelga del uid del usuario, así cada estudiante
+// solo puede ver y modificar lo suyo — ver firestore.rules):
 //
 //   usuarios/{uid}                      -> perfil
-//   usuarios/{uid}/clases/{claseId}     -> materias
+//       nombre, correo, carrera, codigo, semestre, creadoEn, actualizadoEn
+//   usuarios/{uid}/clases/{claseId}     -> materias (bloques de horario)
+//       nombre, sede, dia, inicio, fin, color, creadoEn
 //   usuarios/{uid}/horarios/{horarioId} -> horarios guardados
+//       nombre, clases[ {nombre, sede, dia, inicio, fin, color} ],
+//       creadoEn, actualizadoEn
+//
+// Equivalencia con el localStorage anterior:
+//   usuariosList / usuarioActivo -> usuarios/{uid}  (+ Firebase Auth)
+//   clases_[correo]              -> usuarios/{uid}/clases
+//   misHorarios_[correo]         -> usuarios/{uid}/horarios
 // =====================================================================
-import { get, post, put, del, guardarToken } from "./api.js";
+import { db } from "../firebaseconfig.js";
+import {
+  doc,
+  collection,
+  getDoc,
+  getDocs,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+import { validarClase, haySolape, exigirSinCruces, errorValidacion } from "./validators.js";
 
-// ---------------------------------------------------------------- PERFIL
-export async function obtenerPerfil(_uid) {
-  const { usuario } = await get("/api/me");
-  return usuario;
+const perfilRef = (uid) => doc(db, "usuarios", uid);
+const clasesCol = (uid) => collection(db, "usuarios", uid, "clases");
+const horariosCol = (uid) => collection(db, "usuarios", uid, "horarios");
+
+// Ordena por fecha de creación (los documentos sin fecha quedan primero).
+function porCreacion(a, b) {
+  const ta = a.creadoEn?.toMillis?.() ?? 0;
+  const tb = b.creadoEn?.toMillis?.() ?? 0;
+  return ta - tb;
 }
 
-export async function guardarPerfil(_uid, { nombre, correo, carrera, codigo, semestre }) {
-  const { token } = await put(`/api/usuarios/${encodeURIComponent(correo)}`, {
-    nombre, correo, carrera, codigo, semestre
+// Solo los campos de una clase que se guardan dentro de un horario.
+function soloCamposDeClase({ nombre, sede, dia, inicio, fin, color }) {
+  return { nombre, sede, dia, inicio, fin, color };
+}
+
+// ---------------------------------------------------------------- PERFIL
+export async function crearPerfil(uid, { nombre, correo, carrera, codigo, semestre }) {
+  await setDoc(perfilRef(uid), {
+    nombre, correo, carrera, codigo, semestre,
+    creadoEn: serverTimestamp()
   });
-  guardarToken(token);
+}
+
+export async function obtenerPerfil(uid) {
+  const snap = await getDoc(perfilRef(uid));
+  return snap.exists() ? snap.data() : null;
+}
+
+// merge:true => funciona aunque el perfil no exista todavía y no pisa creadoEn.
+export async function guardarPerfil(uid, { nombre, correo, carrera, codigo, semestre }) {
+  await setDoc(perfilRef(uid), {
+    nombre, correo, carrera, codigo, semestre,
+    actualizadoEn: serverTimestamp()
+  }, { merge: true });
 }
 
 // ---------------------------------------------------------------- CLASES
-export const listarClases = (_uid) => get("/api/clases");
+export async function listarClases(uid) {
+  const snap = await getDocs(clasesCol(uid));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(porCreacion);
+}
 
-export const agregarClase = (_uid, { nombre, sede, dia, inicio, fin, color }) =>
-  post("/api/clases", { nombre, sede, dia, inicio, fin, color });
+export async function agregarClase(uid, clase) {
+  // Validaciones del backend: sede/día/horas válidas y sin cruces con otras clases.
+  const { error, clase: limpia } = validarClase(clase);
+  if (error) throw errorValidacion(error);
 
-export const eliminarClase = (_uid, claseId) => del(`/api/clases/${encodeURIComponent(claseId)}`);
+  const existentes = await listarClases(uid);
+  const choque = existentes.find((o) => haySolape(limpia, o));
+  if (choque) {
+    throw errorValidacion(
+      `Cruce de horario con "${choque.nombre}" (${choque.dia} ${choque.inicio}-${choque.fin}).`
+    );
+  }
+
+  const datos = soloCamposDeClase(limpia);
+  const ref = await addDoc(clasesCol(uid), { ...datos, creadoEn: serverTimestamp() });
+  return { id: ref.id, ...datos };
+}
+
+export async function eliminarClase(uid, claseId) {
+  await deleteDoc(doc(db, "usuarios", uid, "clases", claseId));
+}
 
 // -------------------------------------------------------------- HORARIOS
-export const listarHorarios = (_uid) => get("/api/horarios");
+export async function listarHorarios(uid) {
+  const snap = await getDocs(horariosCol(uid));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(porCreacion);
+}
 
 // Si recibe "id" actualiza ese horario; si no, crea uno nuevo.
 // Devuelve el horario guardado: { id, nombre, clases }.
-export function guardarHorario(_uid, { id, nombre, clases }) {
-  return id
-    ? put(`/api/horarios/${encodeURIComponent(id)}`, { nombre, clases })
-    : post("/api/horarios", { nombre, clases });
+export async function guardarHorario(uid, { id, nombre, clases }) {
+  if (typeof nombre !== "string" || !nombre.trim() || nombre.trim().length > 120) {
+    throw errorValidacion("El nombre del horario es obligatorio (máximo 120 caracteres).");
+  }
+  if (!Array.isArray(clases) || clases.length > 100) {
+    throw errorValidacion("El horario debe tener una lista de máximo 100 clases.");
+  }
+  const copiaClases = clases.map((c) => {
+    const { error, clase } = validarClase(c);
+    if (error) throw errorValidacion(`Clase inválida en el horario: ${error}`);
+    return soloCamposDeClase(clase);
+  });
+  exigirSinCruces(copiaClases);
+  nombre = nombre.trim();
+
+  if (id) {
+    await setDoc(doc(db, "usuarios", uid, "horarios", id), {
+      nombre,
+      clases: copiaClases,
+      actualizadoEn: serverTimestamp()
+    }, { merge: true });
+    return { id, nombre, clases: copiaClases };
+  }
+
+  const ref = await addDoc(horariosCol(uid), {
+    nombre,
+    clases: copiaClases,
+    creadoEn: serverTimestamp(),
+    actualizadoEn: serverTimestamp()
+  });
+  return { id: ref.id, nombre, clases: copiaClases };
 }
 
-export const eliminarHorario = (_uid, horarioId) => del(`/api/horarios/${encodeURIComponent(horarioId)}`);
+export async function eliminarHorario(uid, horarioId) {
+  await deleteDoc(doc(db, "usuarios", uid, "horarios", horarioId));
+}

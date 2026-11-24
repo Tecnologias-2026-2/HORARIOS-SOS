@@ -1,11 +1,11 @@
 // =====================================================================
-// Sesión (cookie de la API) para las páginas privadas (dashboard, perfil, pag1, pag2,
+// Sesión para las páginas privadas (dashboard, perfil, pag1, pag2,
 // mis-horarios). Al importarlo:
 //   1) exige sesión iniciada (si no hay, redirige a inicio.html)
 //   2) conecta el modal de "Cerrar sesión" que usan todas esas páginas
 //
 // Uso:   import { usuarioListo } from "./js/sesion.js";
-//        const usuario = await usuarioListo;   // usuario de la sesión: { uid, email, nombre, ... }
+//        const usuario = await usuarioListo;   // usuario de Firebase Auth
 // =====================================================================
 import { requerirSesion, cerrarSesion } from "./auth.js";
 

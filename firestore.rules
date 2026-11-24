@@ -28,14 +28,19 @@ service cloud.firestore {
         && textoValido(d.semestre, 60);
     }
 
+    function horaValida(h) {
+      return h is string && h.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$') && h >= '07:00' && h <= '23:00';
+    }
+
     function claseValida(d) {
       return d.keys().hasAll(['nombre', 'sede', 'dia', 'inicio', 'fin', 'color'])
         && d.keys().hasOnly(['nombre', 'sede', 'dia', 'inicio', 'fin', 'color', 'creadoEn'])
         && textoValido(d.nombre, 120)
-        && textoValido(d.sede, 60)
-        && textoValido(d.dia, 20)
-        && textoValido(d.inicio, 5)
-        && textoValido(d.fin, 5)
+        && d.sede in ['Calle 100', 'Campus Cajicá', 'Sede Medicina']
+        && d.dia in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+        && horaValida(d.inicio)
+        && horaValida(d.fin)
+        && d.fin > d.inicio
         && textoValido(d.color, 9);
     }
 
